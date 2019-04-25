@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title><%= page.title %></title>
+  <title><%= site.title %> | <%= page.title %></title>
   <% if (page.description) { %><meta name="description" content="<%= page.description %>"><% } %>
 
   <link rel="icon" href="/favicon.png">
@@ -51,7 +51,12 @@
         <% if (page.title) { %><h1 class="post-title"><%= page.title %></h1><% } %>
       </header>
 
-      <% if (toc) { %><%- toc %><% } %>
+      <% if (toc) { %>
+      <div>
+        <div>Page Contents</div>
+        <%- toc %>
+      </div>
+      <% } %>
 
       <div class="post-content"><%- content %></div>
     </article>
