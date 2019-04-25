@@ -1,0 +1,22 @@
+{
+  "name": "simple-docs",
+  "version": "0.0.1",
+  "description": "Create documentation from markdown files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Speirs <james.speirs@gmail.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "ejs-lint": "^0.3.0",
+    "standard": "^12.0.1"
+  },
+  "dependencies": {
+    "chokidar": "^2.1.5",
+    "ejs": "^2.6.1",
+    "marked": "^0.6.2",
+    "mime-types": "^2.1.24",
+    "sass": "^1.18.0"
+  }
+}
