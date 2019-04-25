@@ -14,6 +14,7 @@ module.exports = async function (source, destination, template) {
   const configFilePath = path.resolve(source, 'simple-docs.js')
   let config
   try {
+    delete require.cache[configFilePath]
     config = require(configFilePath)
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND') {
@@ -66,9 +67,28 @@ module.exports = async function (source, destination, template) {
   }
 
   // build the template css
-  const cssMain = path.resolve(assetsDir, 'css', 'main.scss')
-  if (await files.isFile(cssMain)) await new Promise((resolve, reject) => {
-    sass.render({ file: cssMain }, async function (err, result) {
+  const sassDirectoryPath = path.resolve(assetsDir, 'css')
+  const sassMain = path.resolve(sassDirectoryPath, 'main.scss')
+  if (await files.isFile(sassMain)) await new Promise(async (resolve, reject) => {
+    const vars = config.cssVars
+    const rxVariables = /^(\$\S+) *([\s\S]+?); *(?:\/\/ *VAR *(\w+))?$/gm
+    const content = await files.readFile(sassMain, 'utf8')
+    let data = ''
+    let index = 0
+    let match
+    while ((match = rxVariables.exec(content))) {
+      const key = match[3]
+      data += content.substring(index, match.index) + match[1] + ' ' +
+        (key && vars[key] ? vars[key] : match[2]) + ';'
+      index = match.index + match[0].length
+    }
+    data += content.substring(index)
+
+    const options = {
+      data,
+      includePaths: [ sassDirectoryPath ]
+    }
+    sass.render(options, async function (err, result) {
       if (err) return reject(err)
       const dest = path.resolve(destination, 'assets', 'css')
       await files.ensureDirectoryExists(dest)
