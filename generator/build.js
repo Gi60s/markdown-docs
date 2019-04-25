@@ -6,6 +6,9 @@ const marked = require('marked')
 const path = require('path')
 const sass = require('sass')
 
+const rxHttp = /^https?:\/\//
+const rxMarkdownFilePath = /\.md$/i
+
 module.exports = async function (source, destination, template) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
@@ -255,8 +258,29 @@ async function getSiteStructure (options) {
   } else if (stats.isFile()) {
     const ext = path.extname(source)
     if (ext.toLowerCase() === '.md') {
-      const content = await files.readFile(source, 'utf8')
-      const match = /(?:^---([\s\S]+?)---$\s*)?([\s\S]+)?/gm.exec(content.toString())
+      let rawContent = await files.readFile(source, 'utf8')
+
+      // convert internal links that end in .md to their correct navigation equivalent
+      const rxFixLinks = /(\[[^\]]+?]) *(: *([\s\S]+?)$|\(([\s\S]+?)\))/gm
+      let content = ''
+      let index = 0
+      let match
+      while ((match = rxFixLinks.exec(rawContent))) {
+        const link = match[3] || match[4]
+        if (!rxHttp.test(link) && rxMarkdownFilePath.test(link)) {
+          const newLink = link.substring(0, link.length - 3)
+          content += rawContent.substring(index, match.index) + match[1] +
+            (match[2].startsWith(':') ? ': ' + newLink : '(' + newLink + ')')
+        } else {
+          content += rawContent.substring(index, match.index) + match[0]
+        }
+        index = match.index + match[0].length
+      }
+      content += rawContent.substring(index)
+      if (source.indexOf('default.md') !== -1) console.log(content)
+
+      // pull off the headers and read them
+      match = /(?:^---([\s\S]+?)---$\s*)?([\s\S]+)?/gm.exec(content)
       if (match && match[1]) {
         const params = { toc: 'true' }
         match[1]
@@ -326,8 +350,6 @@ function organizeNavigation (structure, source, isRoot) {
         return a.title < b.title ? -1 : 1
       }
     })
-
-    console.log(result.links)
   }
 
   if (isRoot) {
