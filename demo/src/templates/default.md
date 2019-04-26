@@ -17,8 +17,8 @@ You can change some of the styling for the default template by specifying proper
 | baseLineHeight | The base line height. | `1.5` |
 | backgroundColor | The base background color. | `#FDFDFD` |
 | brandColor | Primary branding color. | `#2A7AE2` |
-| brandColorDark | Dark brand color. | `#074AA0` |
-| brandColorLight | Light brand color. | `#79ACED` |
+| brandColorDark | Dark brand color. | `#053B80` |
+| brandColorLight | Light brand color. | `#B3CFF2` |
 | codeBackground | The background color for code sections. | `#828282` |
 | greyColor | The gray to use. | `#828282` |
 | maxWidth | The maximum width | `1400px` |
@@ -49,8 +49,6 @@ This template looks at the page headers to define how parts of the page are rend
 | -------- | ----------- |
 | canonical | A relative or absolute URL to this same page that exists elsewhere. This helps SEO. |
 | description | The description to add to the HTML header's meta data |
-| next | Set to a navigation link to show a next button that will navigate to this route. |
-| previous | Set to a navigation link to show a previous button that will navigate to this route. |
 | subtitle | The sub title for the page. |
 | title | The title for the page. |
-| toc | Supported as described in the [headers documentation](../documenting/index.md#headers) |
+| toc | Supported as described in the [headers documentation](../create-docs/index.md#headers) |
