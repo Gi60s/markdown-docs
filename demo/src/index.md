@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Home
-navOrder: documenting templates
+navOrder: create-docs templates
 ---
 
 # Documentation Made Easy
