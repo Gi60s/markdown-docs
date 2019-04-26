@@ -25,6 +25,82 @@ Each directory must contain an `index.md` file.
 
 The site navigation menu will be generated based on the file system structure of your documentation. The title for links will come from the `title` [header](#headers) for each page.
 
+## Configuration
+
+### The Config File
+
+Your documentation must contain a configuration file at the top level directory of your documentation.
+
+By default the config file should be named `simple-docs.js`, but you can specify what the name of this file is during build or development start up.
+
+**Example Config File**
+
+```js
+module.exports = {
+  basePath: '/',
+  cssVars: {},
+  domain: 'http://your-domain.com',
+  git: {
+    docsSource: '/docs-source',
+    repository: 'https://github.com/your-org/your-repository'
+  },
+  pageDefaults: {
+    layout: 'default'
+  },
+  title: 'Simple Docs'
+}
+```
+
+### Custom Config File Location
+
+Your documentation can use a custom config file instead of always using the `simple-docs.js` file. This could be useful if you have different settings for development and production documentation.
+
+**Build**
+
+Command Line
+
+```bash
+$ simple-docs build -c ./source/my-config.js ./source ./destination
+```
+
+Code
+
+```js
+const simpleDocs = require('simple-docs')
+const promise = simpleDocs.build('/path/to/source', '/path/to/destination', {
+  config: '/path/to/my-config.js' 
+})
+```
+
+**Develop**
+
+Command Line
+
+```bash
+$ simple-docs dev -c ./source/my-config.js ./source ./destination
+```
+
+Code
+
+```js
+const simpleDocs = require('simple-docs')
+const promise = simpleDocs.dev('/path/to/source', {
+  config: '/path/to/my-config.js' 
+})
+```
+
+### Config Options
+
+| Option | Description |
+| ------ | ----------- |
+| basePath | The base path within your domain were the documentation will be served. |
+| cssVars | An object that can contain CSS variables to overwrite for a template being used. The variables and values you can place here are dependent on the template you're using. |
+| domain | The domain at which your documentation can be reached. |
+| git.docSource | Within Github, Gitlab, etc. the location of your documentation source files. If a full URL is not specified then the `git.repository` URL will be prepended to this value. |
+| git.repository | The Github, Gitlab, etc. repository for this documentation. |
+| pageDefaults | This object contains defaults that you'd like applied to every page unless overwritten by the [page's headers](#headers). |
+| title | The title of your entire site. |
+
 # Markdown
 
 ## Links
