@@ -4,8 +4,11 @@ const files = require('./files')
 const http = require('http')
 const mime = require('mime-types')
 const path = require('path')
+const tempDir = require('temp-dir')
 
-module.exports = function (source, destination, template = '', port = 8080) {
+module.exports = function (source, options = {}) {
+  const port = options.hasOwnProperty('port') ? options.port : 8080
+  const destination = path.resolve(tempDir, 'simple-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
   let buildPromise
   let buildPending = false
   let debounce
@@ -33,6 +36,9 @@ module.exports = function (source, destination, template = '', port = 8080) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Not found');
       }
+    } else if (!sent) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not found');
     }
   });
 
@@ -69,7 +75,7 @@ module.exports = function (source, destination, template = '', port = 8080) {
       debounce = setTimeout(function () {
         const time = Date.now()
         process.stdout.write('Building')
-        buildPromise = build(source, destination, template)
+        buildPromise = build(source, destination, options)
           .then(data => {
             process.stdout.write(' completed in ' + (Date.now() - time) + ' milliseconds\n')
             return data
