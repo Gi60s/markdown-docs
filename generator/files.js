@@ -11,11 +11,14 @@ const files = module.exports = {
   mkdir: util.promisify(fs.mkdir),
   readdir: util.promisify(fs.readdir),
   readFile: util.promisify(fs.readFile),
+  rmDir,
   stat: util.promisify(fs.stat),
+  unlink: util.promisify(fs.unlink),
   writeFile: util.promisify(fs.writeFile)
 }
 
 const copyFile = util.promisify(fs.copyFile)
+const removeDir = util.promisify(fs.rmdir)
 
 async function copy (source, dest, filter) {
   if (!filter || filter(source)) {
@@ -72,4 +75,24 @@ async function isFile (path) {
       throw err
     }
   }
+}
+
+async function rmDir (dirPath) {
+  try {
+    await files.stat(dirPath)
+  } catch (err) {
+    if (err.code === 'ENOENT') return
+  }
+
+  const filesNames = await files.readdir(dirPath)
+  const promises = filesNames.map(async fileName => {
+    const fullPath = path.resolve(dirPath, fileName)
+    const stats = await files.stat(fullPath)
+    if (stats.isDirectory()) {
+      return rmDir(fullPath)
+    } else {
+      files.unlink(fullPath)
+    }
+  })
+  return await Promise.all(promises)
 }
