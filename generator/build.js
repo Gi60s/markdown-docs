@@ -2,25 +2,38 @@
 const ejs = require('ejs')
 const { EOL } = require('os')
 const files = require('./files')
+const hljs = require('highlight.js')
 const marked = require('marked')
 const path = require('path')
+const pathIsInside = require('path-is-inside')
 const sass = require('sass')
 
 const rxHttp = /^https?:\/\//
 const rxMarkdownFilePath = /\.md$/i
 
-// TODO: delete build destination contents prior to each build
-// TODO: do not let source and destination be the same
-// TODO: fix table of contents to have valid link references
 // TODO: document SCSS in template creation
-// TODO: update documented default colors for default template
+// TODO: implement custom config
+// TODO: config default vars
+// TODO: basePath
+// TODO: update default template (also, no openapi enforcer)
 
-module.exports = async function (source, destination, template) {
+module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
 
+  // normalize source and destination and make sure they are not in conflict
+  const cwd = process.cwd()
+  source = path.resolve(cwd, source)
+  destination = path.resolve(cwd, destination)
+  if (source === destination) throw Error('Source directory and destination directory cannot be the same')
+  if (pathIsInside(destination, source)) throw Error('The destination directory cannot be within the source directory')
+  if (pathIsInside(source, destination)) throw Error('The source directory cannot be within the destination directory')
+
+  // remove old destination content
+  await files.rmDir(destination)
+
   // get the build configuration
-  const configFilePath = path.resolve(source, 'simple-docs.js')
+  configFilePath = configFilePath ? path.resolve(cwd, configFilePath) : path.resolve(source, 'simple-docs.js')
   let config
   try {
     delete require.cache[configFilePath]
@@ -34,7 +47,11 @@ module.exports = async function (source, destination, template) {
   }
 
   // locate the template directory to use
-  if (!template) template = path.resolve(__dirname, '..', 'templates', 'default')
+  if (!template) {
+    template = path.resolve(__dirname, '..', 'templates', 'default')
+  } else if (template.indexOf(path.sep) === -1) {
+    template = path.resolve(__dirname, '..', 'templates', template)
+  }
   const layouts = await (async () => {
     const layoutsDir = path.resolve(template, 'layouts')
     const fileNames = await files.readdir(layoutsDir)
@@ -55,11 +72,9 @@ module.exports = async function (source, destination, template) {
     root: source,
     source
   })
-  // console.log(JSON.stringify(structure, (key, value) => key === 'parent' ? undefined : value, 2))
 
   // organize navigation
   const nav = organizeNavigation(structure, source, true)
-  // console.log(JSON.stringify(navigation, (key, value) => key === 'parent' ? undefined : value, 2))
 
   // flatten the structure
   const map = flattenSiteStructure(structure, {})
@@ -137,7 +152,11 @@ async function build ({ destination, layouts, map, nav, root, site, source }) {
     if (data) {
       if (ext.toLowerCase() === '.md') {
         const params = {
-          content: marked(data.content),
+          content: marked(data.content, {
+            highlight: (code, style) => {
+              return hljs.highlight(style, code).value
+            }
+          }),
           navigation: createNavHtml(nav, rel, 0),
           page: Object.assign({}, data.page, {
             description: site.description || data.page.description || '',
@@ -198,15 +217,26 @@ function buildToc (content, tocDepth) {
     last = next
   }
 
-  return root.children.length ? '<ul class="toc">' + buildTocHtml(root.children, tocDepth, 1) + '</ul>' : ''
+  return root.children.length ? '<ul class="toc">' + buildTocHtml(root.children, tocDepth, 1, {}) + '</ul>' : ''
 }
 
-function buildTocHtml (children, allowedDepth, depth) {
+function buildTocHtml (children, allowedDepth, depth, store) {
   let html = ''
   children.forEach(child => {
-    html += '<li><a href="#">' + child.title + '</a>'
+    let ref = child.title.toLowerCase()
+      .replace(/ +/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/-{2,}/g, '-')
+    if (!store.hasOwnProperty(ref)) {
+      store[ref] = 0
+    } else {
+      store[ref]++
+      ref += store[ref]
+    }
+
+    html += '<li><a href="#' + ref +'">' + child.title + '</a>'
     if (child.children.length > 0 && allowedDepth > depth) {
-      html += '<ul>' + buildTocHtml(child.children, allowedDepth, depth + 1) + '</ul>'
+      html += '<ul>' + buildTocHtml(child.children, allowedDepth, depth + 1, store) + '</ul>'
     }
     html += '</li>'
   })
@@ -283,7 +313,6 @@ async function getSiteStructure (options) {
         index = match.index + match[0].length
       }
       content += rawContent.substring(index)
-      if (source.indexOf('default.md') !== -1) console.log(content)
 
       // pull off the headers and read them
       match = /(?:^---([\s\S]+?)---$\s*)?([\s\S]+)?/gm.exec(content)
