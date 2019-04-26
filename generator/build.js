@@ -9,6 +9,12 @@ const sass = require('sass')
 const rxHttp = /^https?:\/\//
 const rxMarkdownFilePath = /\.md$/i
 
+// TODO: delete build destination contents prior to each build
+// TODO: do not let source and destination be the same
+// TODO: fix table of contents to have valid link references
+// TODO: document SCSS in template creation
+// TODO: update documented default colors for default template
+
 module.exports = async function (source, destination, template) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
