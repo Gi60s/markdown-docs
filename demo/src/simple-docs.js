@@ -1,6 +1,6 @@
 module.exports = {
   icon: null,
-  title: 'Your Site',
+  title: 'Simple Docs',
   url: 'http://your-domain.com/',
   cssVars: {
   }

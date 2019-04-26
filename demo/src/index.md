@@ -1,8 +1,10 @@
 ---
 layout: default
 title: Home
-navOrder: linking headers navigation temp
+navOrder: documenting templates
 ---
+
+# Documentation Made Easy
 
 Create documentation from markdown that can be served from any static web server.
 
@@ -11,12 +13,34 @@ Create documentation from markdown that can be served from any static web server
 - Auto generates navigation
 - Can auto generate table of contents per page
 
-This documentation was created using this tool and the built in `default` template.
+This documentation was created using this tool and the built in [default template](./templates/default.md) but you can also create your own [custom template](./templates/custom.md) to fully customize how it looks and operates.
+
+# Installation
+
+```bash
+$ npm install -g simple-docs
+```
 
 # Usage
 
-## Develop Documentation
+### Develop Documentation
 
-If you're actively working on some documentation, this is your best option because it will auto rebuild the documents as you make changes.
+While you're writing your documentation you can run a server that will both serve your documentation through a browser and auto rebuild your documentation as you make changes.
 
-## Build Documentation
+```bash
+$ simple-docs dev ./source/directory ./destination/directory
+```
+
+It is also possible to specify a [custom template](./templates/custom.md) to use for generating your documentation.
+
+```bash
+$ simple-docs dev ./source/directory ./destination/directory ./my-custom-template-directory
+```
+
+### Build Documentation
+
+This will build your documentation once. It will not watch for changes and auto rebuild. It will not serve your documentation to a browser.
+
+```bash
+$ simple-docs build ./source/directory ./destination/directory
+```

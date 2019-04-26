@@ -3,7 +3,7 @@ layout: default
 title: The Default Template
 ---
 
-This template supports
+The default template will be used if you run a build without specifying a template to use.
 
 # CSS Build Variables
 
@@ -26,3 +26,31 @@ You can change some of the styling for the default template by specifying proper
 | spacingUnit | The spacing to use to separate parts of the documentation. | `30px` |
 | tabletWidth | The width at which the layout will swap to tablet mode. | `800px` |
 | textColor | The base text color. | `#111` |
+
+# Layouts
+
+The default template only has one [layout](./layouts.md) named `default`.
+
+## Default Layout 
+ 
+### Features
+
+- Floating navigation
+- Mobile ready
+- Next and previous buttons
+- Titles and sub titles
+- Table of (page) contents
+
+### Page Headers
+
+This template looks at the page headers to define how parts of the page are rendered. Specifically, these are the headers used by the default template.
+
+| Property | Description |
+| -------- | ----------- |
+| canonical | A relative or absolute URL to this same page that exists elsewhere. This helps SEO. |
+| description | The description to add to the HTML header's meta data |
+| next | Set to a navigation link to show a next button that will navigate to this route. |
+| previous | Set to a navigation link to show a previous button that will navigate to this route. |
+| subtitle | The sub title for the page. |
+| title | The title for the page. |
+| toc | Supported as described in the [headers documentation](../documenting/index.md#headers) |
