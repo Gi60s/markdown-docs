@@ -89,9 +89,10 @@ async function rmDir (dirPath) {
     const fullPath = path.resolve(dirPath, fileName)
     const stats = await files.stat(fullPath)
     if (stats.isDirectory()) {
-      return rmDir(fullPath)
+      await rmDir(fullPath)
+      await removeDir(fullPath)
     } else {
-      files.unlink(fullPath)
+      await files.unlink(fullPath)
     }
   })
   return await Promise.all(promises)
