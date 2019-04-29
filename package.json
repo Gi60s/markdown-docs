@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "markdown-docs": "./bin/cli.js"
+  },
   "author": "James Speirs <james.speirs@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -14,6 +17,7 @@
   },
   "dependencies": {
     "chokidar": "^2.1.5",
+    "commander": "^2.20.0",
     "ejs": "^2.6.1",
     "highlight.js": "^9.15.6",
     "marked": "^0.6.2",
