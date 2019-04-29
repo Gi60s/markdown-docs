@@ -11,6 +11,7 @@ const send = require('send')
  * Start serving documentation in development mode
  * @param {string} source The directory containing markdown files to serve.
  * @param {object} [options]
+ * @param {string} [options.config]
  * @param {string} [options.destination] The destination to build files to. Defaults to a temp directory.
  * @param {number} [options.port=8080] The port to serve files from.
  * @param {string} [options.template] The template to use to build.
