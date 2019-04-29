@@ -98,10 +98,12 @@ module.exports = async function (source, destination, { configFilePath, template
   }
 
   // build the static site
-  await build({ config, destination, layouts, map, nav, root: source, source })
+  const customBuilderPath = path.resolve(template, 'builder.js')
+  const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
+  await build({ builder, config, destination, layouts, map, nav, root: source, source })
 }
 
-async function build ({ config, destination, layouts, map, nav, root, source }) {
+async function build ({ builder, config, destination, layouts, map, nav, root, source }) {
   const stats = await files.stat(source)
   const rel = path.relative(root, source)
   // const dest = path.resolve(destination, rel)
@@ -111,6 +113,7 @@ async function build ({ config, destination, layouts, map, nav, root, source }) 
     const fileNames = await files.readdir(source)
     const promises = fileNames.map(async fileName => {
       return build({
+        builder,
         config,
         destination: path.resolve(destination, fileName),
         layouts,
@@ -128,11 +131,13 @@ async function build ({ config, destination, layouts, map, nav, root, source }) 
     if (data) {
       if (ext.toLowerCase() === '.md') {
         const params = {
-          content: marked(data.content, {
-            highlight: (code, style) => {
-              return hljs.highlight(style, code).value
-            }
-          }),
+          content: builder && builder.markdown
+            ? builder.markdown(data.content, marked)
+            : marked(data.content, {
+              highlight: (code, style) => {
+                return hljs.highlight(style, code).value
+              }
+            }),
           navigation: createNavHtml(nav, rel, 0),
           page: Object.assign({}, config.page, data.page, {
             description: config.site.description || data.page.description || '',
