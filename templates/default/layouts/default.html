@@ -12,7 +12,7 @@
 
   <% if (template.favicon) { %><link rel="icon" href="<%= site.basePath %><%= template.favicon %>"><% } %>
 
-  <link rel="stylesheet" href="<%= site.basePath %>/_template/styles/main.css">
+  <link rel="stylesheet" href="<%= site.basePath %>/template-files/styles/main.css">
   <% if (template.cssFiles) { %>
   <%   for (var i = 0; i < template.cssFiles.length; i++) { %>
   <link rel="stylesheet" href="<%= site.basePath %><%= template.cssFiles[i] %>">
@@ -94,7 +94,7 @@
 </footer>
 
 
-<script src="<%= site.basePath %>/assets/js/main.js"></script>
+<script src="<%= site.basePath %>/template-files/js/main.js"></script>
 
 </body>
 

@@ -70,7 +70,7 @@ module.exports = async function (source, destination, { configFilePath, template
   // copy over all assets except css directory
   const assetsDir = path.resolve(template, 'assets')
   if (await files.isDirectory(assetsDir)) {
-    const dest = path.resolve(destination, 'assets')
+    const dest = path.resolve(destination, 'template-files')
     await files.ensureDirectoryExists(dest)
     await files.copy(assetsDir, dest, source => {
       const rel = path.relative(assetsDir, source)
@@ -84,7 +84,7 @@ module.exports = async function (source, destination, { configFilePath, template
     await renderSassFile(sassDirectoryPath, {
       config,
       sassDirectoryPath,
-      templateDestination: path.resolve(destination, '_template')
+      templateDestination: path.resolve(destination, 'template-files')
     })
   }
 
