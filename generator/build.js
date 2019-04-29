@@ -11,11 +11,8 @@ const sass = require('sass')
 const rxHttp = /^https?:\/\//
 const rxMarkdownFilePath = /\.md$/i
 
-// TODO: document SCSS in template creation
-// TODO: implement custom config
-// TODO: config default vars
 // TODO: basePath
-// TODO: update default template (also, no openapi enforcer)
+// TODO: link validation
 
 module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
   const stats = await files.stat(source)
@@ -33,14 +30,14 @@ module.exports = async function (source, destination, { configFilePath, template
   await files.rmDir(destination)
 
   // get the build configuration
-  configFilePath = configFilePath ? path.resolve(cwd, configFilePath) : path.resolve(source, 'simple-docs.js')
+  configFilePath = configFilePath ? path.resolve(cwd, configFilePath) : path.resolve(source, 'markdown-docs.js')
   let config
   try {
     delete require.cache[configFilePath]
     config = require(configFilePath)
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND') {
-      throw Error('Missing required configuration file "simple-docs.js" in source directory')
+      throw Error('Missing required configuration file "markdown-docs.js" in source directory')
     } else {
       throw err
     }
@@ -91,41 +88,20 @@ module.exports = async function (source, destination, { configFilePath, template
   }
 
   // build the template css
-  const sassDirectoryPath = path.resolve(assetsDir, 'css')
-  const sassMain = path.resolve(sassDirectoryPath, 'main.scss')
-  if (await files.isFile(sassMain)) await new Promise(async (resolve, reject) => {
-    const vars = config.cssVars
-    const rxVariables = /^(\$\S+) *([\s\S]+?); *(?:\/\/ *VAR *(\w+))?$/gm
-    const content = await files.readFile(sassMain, 'utf8')
-    let data = ''
-    let index = 0
-    let match
-    while ((match = rxVariables.exec(content))) {
-      const key = match[3]
-      data += content.substring(index, match.index) + match[1] + ' ' +
-        (key && vars[key] ? vars[key] : match[2]) + ';'
-      index = match.index + match[0].length
-    }
-    data += content.substring(index)
-
-    const options = {
-      data,
-      includePaths: [ sassDirectoryPath ]
-    }
-    sass.render(options, async function (err, result) {
-      if (err) return reject(err)
-      const dest = path.resolve(destination, 'assets', 'css')
-      await files.ensureDirectoryExists(dest)
-      await files.writeFile(path.resolve(dest, 'main.css'), result.css)
-      resolve()
+  const sassDirectoryPath = path.resolve(template, 'styles')
+  if (await files.isDirectory(sassDirectoryPath)) {
+    await renderSassFile(sassDirectoryPath, {
+      config,
+      sassDirectoryPath,
+      templateDestination: path.resolve(destination, '_template')
     })
-  })
+  }
 
   // build the static site
-  await build({ destination, layouts, map, nav, root: source, site: config, source })
+  await build({ config, destination, layouts, map, nav, root: source, source })
 }
 
-async function build ({ destination, layouts, map, nav, root, site, source }) {
+async function build ({ config, destination, layouts, map, nav, root, source }) {
   const stats = await files.stat(source)
   const rel = path.relative(root, source)
   // const dest = path.resolve(destination, rel)
@@ -135,12 +111,12 @@ async function build ({ destination, layouts, map, nav, root, site, source }) {
     const fileNames = await files.readdir(source)
     const promises = fileNames.map(async fileName => {
       return build({
+        config,
         destination: path.resolve(destination, fileName),
         layouts,
         map,
         nav,
         root,
-        site,
         source: path.resolve(source, fileName)
       })
     })
@@ -158,25 +134,26 @@ async function build ({ destination, layouts, map, nav, root, site, source }) {
             }
           }),
           navigation: createNavHtml(nav, rel, 0),
-          page: Object.assign({}, data.page, {
-            description: site.description || data.page.description || '',
+          page: Object.assign({}, config.page, data.page, {
+            description: config.site.description || data.page.description || '',
             directory: path.dirname(data.path),
             fileName: path.basename(data.path),
             path: data.path
           }),
-          site: Object.assign({}, site, {
-            basePath: '/' + (site.url || '/').replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, ''),
-            navigation: site.hasOwnProperty('navigation') ? site.navigation : true
+          site: Object.assign({}, config.site, {
+            basePath: '/' + (config.site.url || '/').replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, ''),
+            navigation: config.site.hasOwnProperty('navigation') ? config.site.navigation : true
           }),
+          template: Object.assign({}, config.template),
           toc: buildToc(data.content, data.page.toc)
         }
         const html = layouts[data.page.layout || 'default'](params)
         const destinationPath = path.resolve(path.dirname(destination), path.basename(destination, ext) + '.html')
         await files.writeFile(destinationPath, html)
-      } else if (source !== path.resolve(root, 'simple-docs.js')) {
+      } else if (source !== path.resolve(root, 'markdown-docs.js')) {
         await files.copy(source, destination)
       }
-    } else if (source !== path.resolve(root, 'simple-docs.js')) {
+    } else if (source !== path.resolve(root, 'markdown-docs.js')) {
       await files.copy(source, destination)
     }
   }
@@ -336,7 +313,7 @@ async function getSiteStructure (options) {
           if (params.navOrder) options.map.navOrder = params.navOrder.split(/ +/)
         }
       }
-    } else if (path.basename(source) !== 'simple-docs.js') {
+    } else if (path.basename(source) !== 'markdown-docs.js') {
       options.map.copy = true
       options.map.navMenu = false
       options.map.path = path.relative(options.root, source)
@@ -404,4 +381,52 @@ function parseMetaString (value) {
   if (value === 'false') return false
   if (value === 'true') return true
   return value
+}
+
+async function renderSassFile (filePath, options) {
+  const { config, sassDirectoryPath, templateDestination } = options
+  const stats = await files.stat(filePath)
+  if (stats.isDirectory()) {
+    const fileNames = await files.readdir(filePath)
+    const promises = fileNames.map(async fileName => {
+      const newFilePath = path.resolve(filePath, fileName)
+      return renderSassFile(newFilePath, options)
+    })
+    return Promise.all(promises)
+
+  } else if (stats.isFile) {
+    const content = await files.readFile(filePath, 'utf8')
+    const rel = path.relative(sassDirectoryPath, filePath)
+    if (content.indexOf('// SASS bootstrap') !== -1) {
+      const vars = (config.template && config.template.cssVars) || {}
+      const rxVariables = /^(\$\S+) *([\s\S]+?); *(?:\/\/ *VAR *(\w+))?$/gm
+      let data = ''
+      let index = 0
+      let match
+      while ((match = rxVariables.exec(content.toString()))) {
+        const key = match[3]
+        data += content.substring(index, match.index) + match[1] + ' ' +
+          (key && vars[key] ? vars[key] : match[2]) + ';'
+        index = match.index + match[0].length
+      }
+      data += content.substring(index)
+
+      const options = {
+        data,
+        includePaths: [ sassDirectoryPath ]
+      }
+      return new Promise((resolve, reject) => {
+        sass.render(options, async function (err, result) {
+          if (err) return reject(err)
+          const outDir = path.dirname(path.resolve(templateDestination, 'styles', rel))
+          const ext = path.extname(filePath)
+          const outFileName = path.basename(filePath, ext)
+          const outFilePath = path.resolve(outDir, outFileName + '.css')
+          await files.ensureDirectoryExists(outDir)
+          await files.writeFile(outFilePath, result.css)
+          resolve()
+        })
+      })
+    }
+  }
 }
