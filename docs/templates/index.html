@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Markdown Docs | Templates</title>
+  
+
+  <link rel="icon" href="/favicon.png">
+
+  <link rel="stylesheet" href="/_template/styles/main.css">
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  
+  
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="wrapper">
+      <a class="site-title" href="/">
+        Markdown Docs
+      </a>
+
+      
+      <nav class="site-nav">
+        <a href="#" class="menu-icon">
+          <svg viewBox="0 0 18 15">
+            <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+            <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+            <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+          </svg>
+        </a>
+      </nav>
+      
+    </div>
+  </header>
+
+<div class="page-content">
+  <div class="wrapper">
+
+    
+    <div class="nav-screen"></div>
+    <nav class="nav-list"><ul><li><a href="/">Home</a></li><li><a href="/create-docs">Creating Documentation</a></li><li><a href="/templates" class="current-page">Templates</a><ul><li><a href="/templates/custom">Create a Custom Template</a></li><li><a href="/templates/default">The Default Template</a></li></ul></li></ul></nav>
+    
+
+    <article class="post">
+      <header class="post-header">
+        
+        <h1 class="post-title">Templates</h1>
+      </header>
+
+      
+      <div>
+        <p><strong>Page Content</strong></p>
+        <div class="section-nav"><ul class="toc"><li><a href="#layouts">Layouts</a></li><li><a href="#styles">Styles</a></li></ul></div>
+      </div>
+      
+
+      <div class="post-content"><p>Templates are used to generate the HTML, CSS, and JavaScript that surround your markdown file&#39;s content. You can use the templates included with this library, or you can define and use your own <a href="custom">custom templates</a>.</p>
+<p>There is currently one built in template: <a href="default">default</a>.</p>
+<h1 id="layouts">Layouts</h1>
+<ul>
+<li><p>Each template can define one or more layouts.</p>
+</li>
+<li><p>Each layout has its own HTML, CSS, and JavaScript. A common reason to have more than one layout would be to display pages that are top level pages differently than pages that a sub pages.</p>
+</li>
+<li><p>A layout will contain the content from your markdown file(s).</p>
+</li>
+<li><p>Layouts are HTML files that use <a href="https://www.npmjs.com/package/ejs">EJS</a> syntax among the HTML tags to produce dynamic HTML.</p>
+</li>
+</ul>
+<h1 id="styles">Styles</h1>
+<ul>
+<li><p>Templates uses <a href="https://www.npmjs.com/package/sass">SASS</a> to dynamically generate CSS.</p>
+</li>
+<li><p>Generated CSS files will automatically be put into the built directory within the <code>assets/css</code> directory.</p>
+</li>
+<li><p>Template SASS files may accept configurable variables from the build, just like the <a href="default.md#css-build-variables">default template</a> allows.</p>
+</li>
+</ul>
+</div>
+    </article>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Markdown Docs</h2>
+
+    
+      <div class="footer-links">
+      
+      <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
+      
+      <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
+      
+      </div>
+    
+
+    <p>
+      Caught a mistake or want to contribute to the documentation?
+      <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/templates/index.md">Edit this page on Github</a>
+    </p>
+
+    
+    <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
+    
+  </div>
+
+</footer>
+
+
+<script src="/assets/js/main.js"></script>
+
+</body>
+
+</html>
