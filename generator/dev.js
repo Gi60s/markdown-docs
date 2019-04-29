@@ -2,13 +2,14 @@ const build = require('./build')
 const chokidar = require('chokidar')
 const files = require('./files')
 const http = require('http')
-const mime = require('mime-types')
+const parseUrl = require('parseurl')
 const path = require('path')
 const tempDir = require('temp-dir')
+const send = require('send')
 
 module.exports = function (source, options = {}) {
   const port = options.hasOwnProperty('port') ? options.port : 8080
-  const destination = path.resolve(tempDir, 'simple-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
+  const destination = path.resolve(tempDir, 'markdown-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
   let buildPromise
   let buildPending = false
   let debounce
@@ -21,28 +22,27 @@ module.exports = function (source, options = {}) {
       return
     }
 
-    // attempt to load requested file
-    const webPath = req.url.split('?')[0].replace(/\/+$/, '').replace(/^\//, '')
-    const ext = path.extname(webPath.split('/').pop())
-    console.log('> ' + webPath)
-    const target = ext
-      ? path.resolve(destination, webPath.split('/').join(path.sep))
-      : path.resolve(destination, webPath.split('/').join(path.sep), 'index.html')
-    const sent = await attemptSendFile(res, target)
-    if (!sent && !ext) {
-      const target = path.resolve(destination, webPath.split('/').join(path.sep) + '.html')
-      const sent = await attemptSendFile(res, target)
-      if (!sent) {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Not found');
+    // if no extension on the path then check if there is an index.html file, then check if <path>.html file.
+    let pathName = parseUrl(req).pathname
+    if (!/\.\w+$/.test(pathName)) {
+      const filePath = path.resolve(destination, pathName.split('/').join(path.sep).substring(1))
+      if (await files.isFile(path.resolve(filePath, 'index.html'))) {
+        pathName += '/index.html'
+      } else if (await files.isFile(filePath + '.html')) {
+        pathName += '.html'
       }
-    } else if (!sent) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('Not found');
     }
+
+    send(req, pathName, { root: destination }).pipe(res)
   });
 
-  const watcher = chokidar.watch(source)
+  let { template } = options
+  if (!template) {
+    template = path.resolve(__dirname, '..', 'templates', 'default')
+  } else if (template.indexOf(path.sep) === -1) {
+    template = path.resolve(__dirname, '..', 'templates', template)
+  }
+  const watcher = chokidar.watch([ source, template ])
   let watcherReady = false
   watcher
     .on('add', () => change())
@@ -74,7 +74,7 @@ module.exports = function (source, options = {}) {
     if (!buildPending && !buildPromise) {
       debounce = setTimeout(function () {
         const time = Date.now()
-        process.stdout.write('Building')
+        process.stdout.write('[' + (new Date().toLocaleTimeString()) + '] Building')
         buildPromise = build(source, destination, options)
           .then(data => {
             process.stdout.write(' completed in ' + (Date.now() - time) + ' milliseconds\n')
@@ -99,22 +99,4 @@ module.exports = function (source, options = {}) {
         .catch(() => {})
     }
   }
-}
-
-async function attemptSendFile (res, target) {
-  try {
-    console.log(target)
-    const content = await files.readFile(target, 'utf8')
-    const headers = {}
-    const contentType = mime.lookup(target)
-    if (contentType) headers['Content-Type'] = contentType
-    res.writeHead(200, headers);
-    res.end(content)
-  } catch (err) {
-    if (err.code === 'ENOENT') return false
-    console.error(err.stack)
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
-    res.end('Internal server error');
-  }
-  return true
 }
