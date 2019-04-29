@@ -3,9 +3,9 @@ title: Templates
 
 ---
 
-Templates are used to generate the HTML, CSS, and JavaScript that surround your markdown file's content. You can use the templates included with this library, or you can define and use your own [custom templates](./custom.md).
+Templates are used to generate the HTML, CSS, and JavaScript that surround your markdown file's content. You can use the templates included with this library, or you can define and use your own [custom templates](custom.md).
 
-There is currently one built in template: [default](./default.md).
+There is currently one built in template: [default](default.md).
 
 # Layouts
 
@@ -23,4 +23,4 @@ There is currently one built in template: [default](./default.md).
 
 - Generated CSS files will automatically be put into the built directory within the `assets/css` directory.
 
-- Template SASS files may accept configurable variables from the build, just like the [default template](./default.md#css-build-variables) allows.
+- Template SASS files may accept configurable variables from the build, just like the [default template](default.md#css-build-variables) allows.
