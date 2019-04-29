@@ -87,7 +87,7 @@ module.exports = function (source, options = {}) {
       debounce = setTimeout(function () {
         const time = Date.now()
         process.stdout.write('[' + (new Date().toLocaleTimeString()) + '] Building')
-        buildPromise = build(source, destination, options)
+        buildPromise = build(source, destination, Object.assign({}, options, { isLocal: true }))
           .then(data => {
             process.stdout.write(' completed in ' + (Date.now() - time) + ' milliseconds\n')
             return data

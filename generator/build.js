@@ -14,7 +14,7 @@ const rxMarkdownFilePath = /\.md$/i
 // TODO: basePath
 // TODO: link validation
 
-module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
+module.exports = async function (source, destination, { configFilePath, isLocal = false, template = 'default' } = {}) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
 
@@ -100,10 +100,10 @@ module.exports = async function (source, destination, { configFilePath, template
   // build the static site
   const customBuilderPath = path.resolve(template, 'builder.js')
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
-  await build({ builder, config, destination, layouts, map, nav, root: source, source })
+  await build({ builder, config, destination, isLocal, layouts, map, nav, root: source, source })
 }
 
-async function build ({ builder, config, destination, layouts, map, nav, root, source }) {
+async function build ({ builder, config, destination, isLocal, layouts, map, nav, root, source }) {
   const stats = await files.stat(source)
   const rel = path.relative(root, source)
   // const dest = path.resolve(destination, rel)
@@ -116,6 +116,7 @@ async function build ({ builder, config, destination, layouts, map, nav, root, s
         builder,
         config,
         destination: path.resolve(destination, fileName),
+        isLocal,
         layouts,
         map,
         nav,
@@ -146,7 +147,11 @@ async function build ({ builder, config, destination, layouts, map, nav, root, s
             path: data.path
           }),
           site: Object.assign({}, config.site, {
-            basePath: '/' + (config.site.url || '/').replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, ''),
+            basePath: isLocal
+              ? ''
+              : '/' + (config.site.url || '/')
+                .replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, '')
+                .replace(/\/+/, ''),
             navigation: config.site.hasOwnProperty('navigation') ? config.site.navigation : true
           }),
           template: Object.assign({}, config.template),
