@@ -1,13 +1,26 @@
 ---
 layout: default
 title: The Default Template
+subtitle: Templates
 ---
 
-The default template will be used if you run a build without specifying a template to use.
+The default template will be used if you run a build without specifying a template to use. The default template currently has just one layout.
+
+# Template Configuration
+
+This template accepts [document configuration](../create-docs/index.md#configuration) parameters:
+
+| Property | Description |
+| -------- | ----------- |
+| cssFiles | An array of web paths to use as CSS imports for all of your files |
+| cssVars | The CSS variables to use to overwrite the default templates current styling. [Read more about specifying the CSS variables' values](#css-build-variables) |
+| favicon | The URL to the favicon |
+| finePrint | HTML content to inject at the bottom of the page as a footer. |
+| footerLinks | An array of objects with a `title` and `href` property. This entries will be added as links to the footer. |
 
 # CSS Build Variables
 
-You can change some of the styling for the default template by specifying properties within your `markdown-docs.js` file.
+You can change some of the styling for the default template by specifying properties within your [document configuration](../create-docs/index.md#configuration) file.
 
 | Variable | Description | Default |
 | -------- | ----------- | ------- |
@@ -27,21 +40,7 @@ You can change some of the styling for the default template by specifying proper
 | tabletWidth | The width at which the layout will swap to tablet mode. | `800px` |
 | textColor | The base text color. | `#111` |
 
-# Layouts
-
-The default template only has one [layout](./layouts.md) named `default`.
-
-## Default Layout 
- 
-### Features
-
-- Floating navigation
-- Mobile ready
-- Next and previous buttons
-- Titles and sub titles
-- Table of (page) contents
-
-### Page Headers
+# Page Headers
 
 This template looks at the page headers to define how parts of the page are rendered. Specifically, these are the headers used by the default template.
 
