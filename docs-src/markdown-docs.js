@@ -6,7 +6,7 @@ module.exports = {
   site: {
     editDocsUrl: 'https://github.com/Gi60s/markdown-docs/tree/master/docs-src',
     title: 'Markdown Docs',
-    url: 'http://your-domain.com/',
+    url: 'https://gi60s.github.io/markdown-docs/',
   },
   template: {
     cssFiles: [
