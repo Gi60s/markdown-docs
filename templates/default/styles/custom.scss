@@ -37,10 +37,6 @@ header.site-header {
   }
 }
 
-li.toc-entry {
-  padding: 2px 0;
-}
-
 table, td, th {
   border-collapse: collapse;
 }
@@ -80,81 +76,6 @@ table {
     th :last-child, td :last-child {
       margin-bottom: 0;
     }
-  }
-}
-
-.alert-danger {
-  color: #a94442;
-  background-color: #f2dede;
-  border: 1px solid #ebccd1;
-  box-sizing: border-box;
-  padding: 10px 10px 10px 45px;
-  margin-bottom: 15px;
-  background-image: url(../icons/danger.svg);
-  background-repeat: no-repeat;
-  background-position: 10px 10px;
-  border-radius: 3px;
-
-  > p {
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.alert-info {
-  color: #31708f;
-  background-color: #d9edf7;
-  border: 1px solid #bce8f1;
-  box-sizing: border-box;
-  padding: 10px 10px 10px 45px;
-  margin-bottom: 15px;
-  background-image: url(../icons/info.svg);
-  background-repeat: no-repeat;
-  background-position: 10px 10px;
-  border-radius: 3px;
-
-  > p {
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.alert-warning {
-  color: #8a6d3b;
-  background-color: #fcf8e3;
-  border: 1px solid #faebcc;
-  box-sizing: border-box;
-  padding: 10px 10px 10px 45px;
-  margin-bottom: 15px;
-  background-image: url(../icons/warning.svg);
-  background-repeat: no-repeat;
-  background-position: 10px 10px;
-  border-radius: 3px;
-
-  > p {
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.openapi-enforcer-title {
-  background-image: url(../icons/logo-125.png);
-  background-repeat: no-repeat;
-  background-position: left center;
-  height: 125px;
-  padding-left: 135px;
-  font-size: 36px;
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 30px;
-
-  > span {
-    display: table-cell;
-    vertical-align: middle;
   }
 }
 
@@ -318,12 +239,6 @@ table {
   color: #777;
 }
 
-.site-icon {
-  height: 30px;
-  padding-right: 10px;
-  margin-top: -5px;
-}
-
 .site-nav {
   > ul {
     list-style: none;
@@ -348,7 +263,38 @@ table {
   }
 }
 
-.site-footer.scroll-nav {
-  margin-left: $left-nav-width + $side-padding;
-  margin-bottom: 120px;
+.site-footer {
+  &.scroll-nav {
+    margin-left: $left-nav-width + $side-padding;
+    margin-bottom: 120px;
+  }
+
+  .footer-col {
+
+    &.footer-col-2 {
+      width: 0;
+      display: none;
+    }
+
+    &.footer-col-3 {
+      width: -webkit-calc(65% - (30px / 2));
+      width: calc(65% - (30px / 2));
+    }
+  }
+
+  .footer-fine-print {
+    font-size: 12px;
+    opacity: .7;
+  }
+
+  .footer-links {
+    margin-bottom: 15px;
+  }
+}
+
+.toc {
+  a {
+    display: inline-block;
+    padding: 5px 0;
+  }
 }

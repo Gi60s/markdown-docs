@@ -10,9 +10,14 @@
   <title><%= site.title %> | <%= page.title %></title>
   <% if (page.description) { %><meta name="description" content="<%= page.description %>"><% } %>
 
-  <link rel="icon" href="/favicon.png">
+  <% if (template.favicon) { %><link rel="icon" href="<%= template.favicon %>"><% } %>
 
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/_template/styles/main.css">
+  <% if (template.cssFiles) { %>
+  <%   for (var i = 0; i < template.cssFiles.length; i++) { %>
+  <link rel="stylesheet" href="<%= template.cssFiles[i] %>">
+  <%   } %>
+  <% } %>
   <% if (page.canonical) { %><link rel="canonical" href="<%= page.canonical %>"><% } %>
 </head>
 
@@ -53,8 +58,8 @@
 
       <% if (toc) { %>
       <div>
-        <div>Page Contents</div>
-        <%- toc %>
+        <p><strong>Page Content</strong></p>
+        <div class="section-nav"><%- toc %></div>
       </div>
       <% } %>
 
@@ -68,28 +73,22 @@
   <div class="wrapper">
     <h2 class="footer-heading"><%= site.title %></h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li><code>npm install openapi-enforcer</code></li>
-        </ul>
+    <% if (template.footerLinks) { %>
+      <div class="footer-links">
+      <% for (var i = 0; i < template.footerLinks.length; i++) { %>
+      <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
+      <% } %>
       </div>
+    <% } %>
 
-      <div class="footer-col footer-col-2">
-        <ul class="social-media-list">
-          <li><a href="https://github.com/byu-oit/openapi-enforcer">Github</a></li>
-          <li><a href="https://www.npmjs.com/package/openapi-enforcer">NPM</a></li>
-        </ul>
-      </div>
+    <p>
+      Caught a mistake or want to contribute to the documentation?
+      <a href="<%= site.editDocsUrl %>/<%= page.path %>">Edit this page on Github</a>
+    </p>
 
-      <div class="footer-col footer-col-3">
-        <p>
-          Caught a mistake or want to contribute to the documentation?
-          <a href="https://github.com/byu-oit/openapi-enforcer/tree/master/jekyll/related-projects.md">Edit this page on Github</a>
-        </p>
-      </div>
-    </div>
-
+    <% if (template.finePrint) { %>
+    <div class="footer-fine-print"><%- template.finePrint %></div>
+    <% } %>
   </div>
 
 </footer>
