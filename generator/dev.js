@@ -7,9 +7,20 @@ const path = require('path')
 const tempDir = require('temp-dir')
 const send = require('send')
 
+/**
+ * Start serving documentation in development mode
+ * @param {string} source The directory containing markdown files to serve.
+ * @param {object} [options]
+ * @param {string} [options.destination] The destination to build files to. Defaults to a temp directory.
+ * @param {number} [options.port=8080] The port to serve files from.
+ * @param {string} [options.template] The template to use to build.
+ * @returns {{stop(): void}}
+ */
 module.exports = function (source, options = {}) {
   const port = options.hasOwnProperty('port') ? options.port : 8080
-  const destination = path.resolve(tempDir, 'markdown-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
+  const destination = options.hasOwnProperty('destination')
+    ? path.resolve(process.cwd(), options.destination)
+    : path.resolve(tempDir, 'markdown-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
   let buildPromise
   let buildPending = false
   let debounce
