@@ -18,7 +18,7 @@ This documentation was created using this tool and the built in [default templat
 # Installation
 
 ```bash
-$ npm install -g simple-docs
+$ npm install -g @gi60s/markdown-docs
 ```
 
 # Usage
@@ -28,13 +28,13 @@ $ npm install -g simple-docs
 While you're writing your documentation you can run a server that will both serve your documentation through a browser and auto rebuild your documentation as you make changes.
 
 ```bash
-$ simple-docs dev ./source/directory ./destination/directory
+$ markdown-docs dev ./source/directory ./destination/directory
 ```
 
 It is also possible to specify a [custom template](./templates/custom.md) to use for generating your documentation.
 
 ```bash
-$ simple-docs dev ./source/directory ./destination/directory ./my-custom-template-directory
+$ markdown-docs dev ./source/directory ./destination/directory ./my-custom-template-directory
 ```
 
 ### Build Documentation
@@ -42,5 +42,5 @@ $ simple-docs dev ./source/directory ./destination/directory ./my-custom-templat
 This will build your documentation once. It will not watch for changes and auto rebuild. It will not serve your documentation to a browser.
 
 ```bash
-$ simple-docs build ./source/directory ./destination/directory
+$ markdown-docs build ./source/directory ./destination/directory
 ```

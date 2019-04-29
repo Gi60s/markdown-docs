@@ -1,0 +1,27 @@
+module.exports = {
+  page: {
+    layout: 'default',
+    toc: true
+  },
+  site: {
+    editDocsUrl: 'https://github.com/Gi60s/markdown-docs/tree/master/docs-src',
+    title: 'Markdown Docs',
+    url: 'http://your-domain.com/',
+  },
+  template: {
+    cssFiles: [
+      '/css/main.css'
+    ],
+    cssVars: {
+      brandColor: '#00A288',
+      brandColorLight: '#8BDBCD',
+      brandColorDark: '#00382F'
+    },
+    favicon: '/favicon.png',
+    finePrint: '<p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p>',
+    footerLinks: [
+      { title: 'Github', href: 'https://github.com/Gi60s/markdown-docs' },
+      { title: 'NPM', href: 'https://www.npmjs.com/package/@gi60s/markdown-docs' }
+    ]
+  }
+}

@@ -7,7 +7,7 @@ The default template will be used if you run a build without specifying a templa
 
 # CSS Build Variables
 
-You can change some of the styling for the default template by specifying properties within your `simple-docs.js` file.
+You can change some of the styling for the default template by specifying properties within your `markdown-docs.js` file.
 
 | Variable | Description | Default |
 | -------- | ----------- | ------- |

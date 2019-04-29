@@ -31,7 +31,7 @@ The site navigation menu will be generated based on the file system structure of
 
 Your documentation must contain a configuration file at the top level directory of your documentation.
 
-By default the config file should be named `simple-docs.js`, but you can specify what the name of this file is during build or development start up.
+By default the config file should be named `markdown-docs.js`, but you can specify what the name of this file is during build or development start up.
 
 **Example Config File**
 
@@ -53,21 +53,21 @@ module.exports = {
 
 ### Custom Config File Location
 
-Your documentation can use a custom config file instead of always using the `simple-docs.js` file. This could be useful if you have different settings for development and production documentation.
+Your documentation can use a custom config file instead of always using the `markdown-docs.js` file. This could be useful if you have different settings for development and production documentation.
 
 **Build**
 
 Command Line
 
 ```bash
-$ simple-docs build -c ./source/my-config.js ./source ./destination
+$ markdown-docs build -c ./source/my-config.js ./source ./destination
 ```
 
 Code
 
 ```js
-const simpleDocs = require('simple-docs')
-const promise = simpleDocs.build('/path/to/source', '/path/to/destination', {
+const markdownDocs = require('markdown-docs')
+const promise = markdownDocs.build('/path/to/source', '/path/to/destination', {
   config: '/path/to/my-config.js' 
 })
 ```
@@ -77,14 +77,14 @@ const promise = simpleDocs.build('/path/to/source', '/path/to/destination', {
 Command Line
 
 ```bash
-$ simple-docs dev -c ./source/my-config.js ./source ./destination
+$ markdown-docs dev -c ./source/my-config.js ./source ./destination
 ```
 
 Code
 
 ```js
-const simpleDocs = require('simple-docs')
-const promise = simpleDocs.dev('/path/to/source', {
+const markdownDocs = require('markdown-docs')
+const promise = markdownDocs.dev('/path/to/source', {
   config: '/path/to/my-config.js' 
 })
 ```
