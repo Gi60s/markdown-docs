@@ -146,6 +146,11 @@ table {
       border-right: 1px solid $grey-color-light;
       padding-left: $side-padding;
       padding-top: 10px;
+      margin-left: -5px;
+
+      .current-page {
+        background-color: adjust-color($brand-light, $alpha: -0.7);
+      }
 
       @include media-query($on-laptop) {
         position: fixed;
@@ -173,21 +178,28 @@ table {
         }
 
         li {
+          a {
+            padding-left: 5px;
+          }
 
           li a {
-            padding-left: 15px;
+            padding-left: 20px;
           }
 
           li li a {
-            padding-left: 30px;
+            padding-left: 35px;
           }
 
           li li li a {
-            padding-left: 45px;
+            padding-left: 50px;
           }
 
           li li li li a {
-            padding-left: 60px;
+            padding-left: 65px;
+          }
+
+          li li li li li a {
+            padding-left: 80px;
           }
         }
       }

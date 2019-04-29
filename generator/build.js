@@ -228,9 +228,9 @@ function buildTocHtml (children, allowedDepth, depth, store) {
 function createNavHtml (nav, currentPath, depth) {
   let html = ''
   if (depth > 0) {
-    html += '<li' + (nav.path === currentPath ? ' class="current-page"' : '') + '>'
+    html += '<li>'
     let route = '/' + nav.path.replace(/(?:^|\/)index.md/i, '').replace(/\.md$/, '')
-    html += '<a href="' + route + '">' + nav.title + '</a>'
+    html += '<a href="' + route + '"' + (nav.path === currentPath ? ' class="current-page"' : '') + '>' + nav.title + '</a>'
   }
   if (nav.links) {
     html += '<ul>'
