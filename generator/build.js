@@ -6,6 +6,7 @@ const hljs = require('highlight.js')
 const marked = require('marked')
 const path = require('path')
 const pathIsInside = require('path-is-inside')
+const readConfig = require('./read-config')
 const sass = require('sass')
 
 const rxHttp = /^https?:\/\//
@@ -13,8 +14,9 @@ const rxMarkdownFilePath = /\.md$/i
 
 // TODO: basePath
 // TODO: link validation
+// TODO: move template assets into _template/assets
 
-module.exports = async function (source, destination, { configFilePath, isLocal = false, template = 'default' } = {}) {
+module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
 
@@ -30,18 +32,7 @@ module.exports = async function (source, destination, { configFilePath, isLocal 
   await files.rmDir(destination)
 
   // get the build configuration
-  configFilePath = configFilePath ? path.resolve(cwd, configFilePath) : path.resolve(source, 'markdown-docs.js')
-  let config
-  try {
-    delete require.cache[configFilePath]
-    config = require(configFilePath)
-  } catch (err) {
-    if (err.code === 'MODULE_NOT_FOUND') {
-      throw Error('Missing required configuration file "markdown-docs.js" in source directory')
-    } else {
-      throw err
-    }
-  }
+  const config = readConfig(source, configFilePath)
 
   // locate the template directory to use
   if (!template) {
@@ -100,10 +91,10 @@ module.exports = async function (source, destination, { configFilePath, isLocal 
   // build the static site
   const customBuilderPath = path.resolve(template, 'builder.js')
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
-  await build({ builder, config, destination, isLocal, layouts, map, nav, root: source, source })
+  await build({ builder, config, destination, layouts, map, nav, root: source, source })
 }
 
-async function build ({ builder, config, destination, isLocal, layouts, map, nav, root, source }) {
+async function build ({ builder, config, destination, layouts, map, nav, root, source }) {
   const stats = await files.stat(source)
   const rel = path.relative(root, source)
   // const dest = path.resolve(destination, rel)
@@ -116,7 +107,6 @@ async function build ({ builder, config, destination, isLocal, layouts, map, nav
         builder,
         config,
         destination: path.resolve(destination, fileName),
-        isLocal,
         layouts,
         map,
         nav,
@@ -139,21 +129,14 @@ async function build ({ builder, config, destination, isLocal, layouts, map, nav
                 return hljs.highlight(style, code).value
               }
             }),
-          navigation: createNavHtml(nav, rel, 0),
+          navigation: createNavHtml(nav, config.site.basePath, rel, 0),
           page: Object.assign({}, config.page, data.page, {
             description: config.site.description || data.page.description || '',
             directory: path.dirname(data.path),
             fileName: path.basename(data.path),
             path: data.path
           }),
-          site: Object.assign({}, config.site, {
-            basePath: isLocal
-              ? ''
-              : '/' + (config.site.url || '/')
-                .replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, '')
-                .replace(/\/+/, ''),
-            navigation: config.site.hasOwnProperty('navigation') ? config.site.navigation : true
-          }),
+          site: config.site,
           template: Object.assign({}, config.template),
           toc: buildToc(data.content, data.page.toc)
         }
@@ -230,17 +213,19 @@ function buildTocHtml (children, allowedDepth, depth, store) {
   return html
 }
 
-function createNavHtml (nav, currentPath, depth) {
+function createNavHtml (nav, basePath, currentPath, depth) {
   let html = ''
   if (depth > 0) {
     html += '<li>'
-    let route = '/' + nav.path.replace(/(?:^|\/)index.md/i, '').replace(/\.md$/, '')
+    let route = basePath + '/' + nav.path
+      .replace(/(?:^|\/)index.md/i, '')
+      .replace(/\.md$/, '')
     html += '<a href="' + route + '"' + (nav.path === currentPath ? ' class="current-page"' : '') + '>' + nav.title + '</a>'
   }
   if (nav.links) {
     html += '<ul>'
     nav.links.forEach(link => {
-      html += createNavHtml(link, currentPath, depth + 1)
+      html += createNavHtml(link, basePath, currentPath, depth + 1)
     })
     html += '</ul>'
   }

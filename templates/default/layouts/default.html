@@ -10,7 +10,7 @@
   <title><%= site.title %> | <%= page.title %></title>
   <% if (page.description) { %><meta name="description" content="<%= page.description %>"><% } %>
 
-  <% if (template.favicon) { %><link rel="icon" href="<%= template.favicon %>"><% } %>
+  <% if (template.favicon) { %><link rel="icon" href="<%= site.basePath %><%= template.favicon %>"><% } %>
 
   <link rel="stylesheet" href="<%= site.basePath %>/_template/styles/main.css">
   <% if (template.cssFiles) { %>
