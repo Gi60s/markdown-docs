@@ -16,7 +16,7 @@ const rxMarkdownFilePath = /\.md$/i
 
 // TODO: static web page servers that require the .html extension
 
-module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
+module.exports = async function (source, destination, { configFilePath, template } = {}) {
   const stats = await files.stat(source)
   if (!stats.isDirectory()) throw Error('Source must be a directory')
 
@@ -33,6 +33,7 @@ module.exports = async function (source, destination, { configFilePath, template
 
   // get the build configuration
   const config = readConfig(source, configFilePath)
+  if (config.template && config.template.path && !template) template = config.template.path
 
   // locate the template directory to use
   if (!template) {
