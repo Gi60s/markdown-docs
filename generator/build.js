@@ -14,7 +14,7 @@ const util = require('./util')
 const rxHttp = /^https?:\/\//
 const rxMarkdownFilePath = /\.md$/i
 
-// TODO: link validation
+// TODO: static web page servers that require the .html extension
 
 module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
   const stats = await files.stat(source)
