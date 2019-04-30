@@ -69,10 +69,10 @@
 
       <footer class="site-footer">
 
-        <% if (site.editDocsUrl) { %>
+        <% if (site.editSourceUrl) { %>
         <p>
           Caught a mistake or want to contribute to the documentation?
-          <a href="<%= site.editDocsUrl %>/<%= page.path %>">Edit this page on Github</a>
+          <a href="<%= site.editSourceUrl %>/<%= page.path %>" target="_blank">Edit this page on Github</a>
         </p>
         <% } %>
 
@@ -83,7 +83,7 @@
         <% if (template.footerLinks) { %>
         <div class="footer-links">
           <% for (var i = 0; i < template.footerLinks.length; i++) { %>
-          <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
+          <div><a href="<%= template.footerLinks[i].href %>" target="_blank"><%= template.footerLinks[i].title %></a></div>
           <% } %>
         </div>
         <% } %>

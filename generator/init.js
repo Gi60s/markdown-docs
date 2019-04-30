@@ -14,7 +14,7 @@ module.exports = async function (source, { gitOrg = '<git-org>', gitRepository =
         toc: true
       },
       site: {
-        ${hasGit}editDocsUrl: 'https://github.com/${gitOrg}/${gitRepository}/tree/master/${srcDirectory}',
+        ${hasGit}editSourceUrl: 'https://github.com/${gitOrg}/${gitRepository}/tree/master/${srcDirectory}',
         title: 'Your Site Title',
         ${hasGit}url: 'https://${gitOrg}.github.io/${gitRepository}/'
       },
