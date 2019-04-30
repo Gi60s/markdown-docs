@@ -287,7 +287,18 @@ table {
 }
 
 .site-footer {
-  padding-left: $side-padding;
+  border-top: 1px solid $grey-color-light;
+  border-bottom: 1px solid $grey-color-light;
+  padding: $side-padding;
+  margin-top: 2 * $side-padding;
+  font-size: 90%;
+  background-color: #fafafa;
+  text-align: center;
+  margin-bottom: $side-padding / 2;
+
+  p {
+    margin: 7px 0;
+  }
 
   &.scroll-nav {
     margin-left: $left-nav-width + $side-padding - 5px;
@@ -300,7 +311,18 @@ table {
   }
 
   .footer-links {
-    margin-bottom: 15px;
+
+    > div {
+      display: inline-block;
+
+      &:before {
+        content: ' | '
+      }
+
+      &:last-child:after {
+        content: ' | '
+      };
+    }
   }
 }
 

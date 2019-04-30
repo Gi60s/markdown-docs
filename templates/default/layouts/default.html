@@ -68,15 +68,6 @@
       </article>
 
       <footer class="site-footer">
-        <h2 class="footer-heading"><%= site.title %></h2>
-
-        <% if (template.footerLinks) { %>
-        <div class="footer-links">
-          <% for (var i = 0; i < template.footerLinks.length; i++) { %>
-          <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
-          <% } %>
-        </div>
-        <% } %>
 
         <p>
           Caught a mistake or want to contribute to the documentation?
@@ -85,6 +76,14 @@
 
         <% if (template.finePrint) { %>
         <div class="footer-fine-print"><%- template.finePrint %></div>
+        <% } %>
+
+        <% if (template.footerLinks) { %>
+        <div class="footer-links">
+          <% for (var i = 0; i < template.footerLinks.length; i++) { %>
+          <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
+          <% } %>
+        </div>
         <% } %>
 
       </footer>
