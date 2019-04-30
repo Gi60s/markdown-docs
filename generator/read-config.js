@@ -7,9 +7,9 @@ module.exports = function (source, configFilePath) {
     const config = require(configFilePath)
 
     if (!config.site) config.site = {}
-    config.site.basePath = '/' + (config.site.url || '/')
-      .replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, '')
-      .replace(/\/+/, '')
+    config.site.basePath = config.site.url
+      ? '/' + config.site.url.replace(/^https?:\/\/[\s\S]+?(?:\/|$)/, '').replace(/\/+/, '')
+      : ''
     config.site.navigation = config.site.hasOwnProperty('navigation') ? config.site.navigation : true
 
     return config
