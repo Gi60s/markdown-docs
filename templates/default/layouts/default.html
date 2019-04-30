@@ -69,10 +69,12 @@
 
       <footer class="site-footer">
 
+        <% if (site.editDocsUrl) { %>
         <p>
           Caught a mistake or want to contribute to the documentation?
           <a href="<%= site.editDocsUrl %>/<%= page.path %>">Edit this page on Github</a>
         </p>
+        <% } %>
 
         <% if (template.finePrint) { %>
         <div class="footer-fine-print"><%- template.finePrint %></div>
