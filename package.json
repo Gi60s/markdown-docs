@@ -4,7 +4,7 @@
   "description": "Create static website documentation from markdown files.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node bin/cli dev -d ./docs ./docs-src"
   },
   "bin": {
     "markdown-docs": "./bin/cli.js"
