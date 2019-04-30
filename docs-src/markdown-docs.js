@@ -9,6 +9,7 @@ module.exports = {
     url: 'https://gi60s.github.io/markdown-docs/',
   },
   template: {
+    path: 'default',
     cssFiles: [
       '/css/main.css'
     ],
