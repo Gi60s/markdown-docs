@@ -142,7 +142,7 @@ These headers are specific to the build process:
 
 | Property | Description | Default |
 | -------- | ----------- | ------- |
-| layout | The [layout](./templates/layouts.md) from the template to use to render this page. | `default` |
+| layout | The [layout](../templates/index.md#layouts) from the template to use to render this page. | `default` |
 | navOrder | This property is only observed inside of an `index.md` file and is used to specify the order of navigation links within the directory, using the file names, separated by spaces. | |
 | title | The title for the page. | |
 | toc | Add a table of contents to the top of the file. Set to `false` or `0` to remove the table of contents. Additionally, you can specify how deep the page table of contents runs by setting a number between `1` and `6`. | `true` |
