@@ -1,6 +1,7 @@
 'use strict'
 const ejs = require('ejs')
 const { EOL } = require('os')
+const findBrokenLinks = require('./find-broken-links')
 const files = require('./files')
 const hljs = require('highlight.js')
 const marked = require('marked')
@@ -8,13 +9,12 @@ const path = require('path')
 const pathIsInside = require('path-is-inside')
 const readConfig = require('./read-config')
 const sass = require('sass')
+const util = require('./util')
 
 const rxHttp = /^https?:\/\//
 const rxMarkdownFilePath = /\.md$/i
 
-// TODO: basePath
 // TODO: link validation
-// TODO: move template assets into _template/assets
 
 module.exports = async function (source, destination, { configFilePath, template = 'default' } = {}) {
   const stats = await files.stat(source)
@@ -92,12 +92,15 @@ module.exports = async function (source, destination, { configFilePath, template
   const customBuilderPath = path.resolve(template, 'builder.js')
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
   await build({ builder, config, destination, layouts, map, nav, root: source, source })
+
+  // find broken links
+  const broken = await findBrokenLinks(source)
+  if (broken.length > 0) console.error('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files has missing or broken links:\n  ' + broken.join('\n  '))
 }
 
 async function build ({ builder, config, destination, layouts, map, nav, root, source }) {
   const stats = await files.stat(source)
   const rel = path.relative(root, source)
-  // const dest = path.resolve(destination, rel)
 
   if (stats.isDirectory()) {
     await files.ensureDirectoryExists(destination)
@@ -153,39 +156,10 @@ async function build ({ builder, config, destination, layouts, map, nav, root, s
 }
 
 function buildToc (content, tocDepth) {
-  const root = { level: 0, children: [] }
-  const rxHeadings = /(?:^(#{1,6}) +([\s\S]+?)$|^(\S+)(?:\r\n|\r|\n)([=-])+$)/gm
+  const root = util.getMarkdownHeadings(content)
 
-  content = content.replace(/^`{3}[\s\S]+?```/gm, '')
   tocDepth = tocDepth === 'true' ? 6 : +tocDepth
   if (isNaN(tocDepth) || tocDepth <= 0) return ''
-
-  let match
-  let last = root
-  while ((match = rxHeadings.exec(content))) {
-    const next = {
-      children: [],
-      level: match[4]
-        ? match[4] === '=' ? 1 : 2
-        : match[1].length,
-      title: match[2] || match[3]
-    }
-
-    if (next.level > last.level) {
-      next.parent = last
-      last.children.push(next)
-    } else if (next.level === last.level) {
-      next.parent = last.parent
-      next.parent.children.push(next)
-    } else {
-      let p = last.parent
-      while (p.level !== next.level) p = p.parent
-      next.parent = p.parent
-      next.parent.children.push(next)
-    }
-
-    last = next
-  }
 
   return root.children.length ? '<ul class="toc">' + buildTocHtml(root.children, tocDepth, 1, {}) + '</ul>' : ''
 }
@@ -193,18 +167,7 @@ function buildToc (content, tocDepth) {
 function buildTocHtml (children, allowedDepth, depth, store) {
   let html = ''
   children.forEach(child => {
-    let ref = child.title.toLowerCase()
-      .replace(/ +/g, '-')
-      .replace(/[^\w-]/g, '')
-      .replace(/-{2,}/g, '-')
-    if (!store.hasOwnProperty(ref)) {
-      store[ref] = 0
-    } else {
-      store[ref]++
-      ref += store[ref]
-    }
-
-    html += '<li><a href="#' + ref +'">' + child.title + '</a>'
+    html += '<li><a href="#' + child.ref +'">' + child.title + '</a>'
     if (child.children.length > 0 && allowedDepth > depth) {
       html += '<ul>' + buildTocHtml(child.children, allowedDepth, depth + 1, store) + '</ul>'
     }

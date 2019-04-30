@@ -107,14 +107,14 @@ module.exports = function (source, options = {}) {
     if (!buildPending && !buildPromise) {
       debounce = setTimeout(function () {
         const time = Date.now()
-        process.stdout.write('[' + (new Date().toLocaleTimeString()) + '] Building')
+        console.log('[' + (new Date().toLocaleTimeString()) + '] Building...')
         buildPromise = build(source, destination, Object.assign({}, options, { isLocal: true }))
           .then(data => {
-            process.stdout.write(' completed in ' + (Date.now() - time) + ' milliseconds\n')
+            console.log('[' + (new Date().toLocaleTimeString()) + '] Build completed in ' + (Date.now() - time) + ' milliseconds\n')
             return data
           })
           .catch(err => {
-            process.stdout.write(' failed')
+            console.log('[' + (new Date().toLocaleTimeString()) + '] Build failed')
             console.error(err.stack)
           })
           .then(data => {
