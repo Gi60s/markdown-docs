@@ -1,6 +1,6 @@
 {
   "name": "@gi60s/markdown-docs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Create static website documentation from markdown files.",
   "main": "index.js",
   "scripts": {
