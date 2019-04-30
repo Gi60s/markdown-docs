@@ -50,20 +50,21 @@
     <nav class="nav-list"><ul><li><a href="/markdown-docs/" class="current-page">Home</a></li><li><a href="/markdown-docs/create-docs">Creating Documentation</a></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></nav>
     
 
-    <article class="post">
-      <header class="post-header">
+    <div class="page-content-main">
+      <article class="post">
+        <header class="post-header">
+          
+          <h1 class="post-title">Home</h1>
+        </header>
+
         
-        <h1 class="post-title">Home</h1>
-      </header>
+        <div>
+          <p><strong>Page Content</strong></p>
+          <div class="section-nav"><ul class="toc"><li><a href="#documentation-made-easy">Documentation Made Easy</a></li><li><a href="#installation">Installation</a></li><li><a href="#usage">Usage</a><ul><li><a href="#develop-documentation">Develop Documentation</a></li><li><a href="#build-documentation">Build Documentation</a></li></ul></li></ul></div>
+        </div>
+        
 
-      
-      <div>
-        <p><strong>Page Content</strong></p>
-        <div class="section-nav"><ul class="toc"><li><a href="#documentation-made-easy">Documentation Made Easy</a></li><li><a href="#installation">Installation</a></li><li><a href="#usage">Usage</a><ul><li><a href="#develop-documentation">Develop Documentation</a></li><li><a href="#build-documentation">Build Documentation</a></li></ul></li></ul></div>
-      </div>
-      
-
-      <div class="post-content"><h1 id="documentation-made-easy">Documentation Made Easy</h1>
+        <div class="post-content"><h1 id="documentation-made-easy">Documentation Made Easy</h1>
 <p>Create documentation from markdown that can be served from any static web server.</p>
 <ul>
 <li>Supports Github pages</li>
@@ -84,36 +85,35 @@
 <p>This will build your documentation once. It will not watch for changes and auto rebuild. It will not serve your documentation to a browser.</p>
 <pre><code class="language-bash">$ markdown-docs build ./<span class="hljs-built_in">source</span>/directory ./destination/directory</code></pre>
 </div>
-    </article>
+      </article>
+
+      <footer class="site-footer">
+        <h2 class="footer-heading">Markdown Docs</h2>
+
+        
+        <div class="footer-links">
+          
+          <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
+          
+          <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
+          
+        </div>
+        
+
+        <p>
+          Caught a mistake or want to contribute to the documentation?
+          <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/index.md">Edit this page on Github</a>
+        </p>
+
+        
+        <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
+        
+
+      </footer>
+    </div>
 
   </div>
 </div>
-
-<footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Markdown Docs</h2>
-
-    
-      <div class="footer-links">
-      
-      <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
-      
-      <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
-      
-      </div>
-    
-
-    <p>
-      Caught a mistake or want to contribute to the documentation?
-      <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/index.md">Edit this page on Github</a>
-    </p>
-
-    
-    <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
-    
-  </div>
-
-</footer>
 
 
 <script src="/markdown-docs/template-files/js/main.js"></script>

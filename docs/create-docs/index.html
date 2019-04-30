@@ -50,20 +50,21 @@
     <nav class="nav-list"><ul><li><a href="/markdown-docs/">Home</a></li><li><a href="/markdown-docs/create-docs" class="current-page">Creating Documentation</a></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></nav>
     
 
-    <article class="post">
-      <header class="post-header">
+    <div class="page-content-main">
+      <article class="post">
+        <header class="post-header">
+          
+          <h1 class="post-title">Creating Documentation</h1>
+        </header>
+
         
-        <h1 class="post-title">Creating Documentation</h1>
-      </header>
+        <div>
+          <p><strong>Page Content</strong></p>
+          <div class="section-nav"><ul class="toc"><li><a href="#how-it-works">How It Works</a></li><li><a href="#structuring-your-documentation">Structuring Your Documentation</a><ul><li><a href="#configuration">Configuration</a><ul><li><a href="#the-config-file">The Config File</a></li><li><a href="#custom-config-file-location">Custom Config File Location</a></li><li><a href="#config-options">Config Options</a></li></ul></li></ul></li><li><a href="#markdown">Markdown</a><ul><li><a href="#links">Links</a></li><li><a href="#headers">Headers</a><ul><li><a href="#build-headers">Build Headers</a></li><li><a href="#template-headers">Template Headers</a></li></ul></li></ul></li></ul></div>
+        </div>
+        
 
-      
-      <div>
-        <p><strong>Page Content</strong></p>
-        <div class="section-nav"><ul class="toc"><li><a href="#how-it-works">How It Works</a></li><li><a href="#structuring-your-documentation">Structuring Your Documentation</a><ul><li><a href="#configuration">Configuration</a><ul><li><a href="#the-config-file">The Config File</a></li><li><a href="#custom-config-file-location">Custom Config File Location</a></li><li><a href="#config-options">Config Options</a></li></ul></li></ul></li><li><a href="#markdown">Markdown</a><ul><li><a href="#links">Links</a></li><li><a href="#headers">Headers</a><ul><li><a href="#build-headers">Build Headers</a></li><li><a href="#template-headers">Template Headers</a></li></ul></li></ul></li></ul></div>
-      </div>
-      
-
-      <div class="post-content"><h1 id="how-it-works">How It Works</h1>
+        <div class="post-content"><h1 id="how-it-works">How It Works</h1>
 <ol>
 <li><p>You write your documentation using markdown and other static assets (images, JavaScript files, CSS files, etc).</p>
 </li>
@@ -209,36 +210,35 @@ nav: index page1 page2
 <p>Some template layouts are looking for headers too and use them to modify the output HTML that is generated. To know what headers are used by a specific template you should refer to the template&#39;s documentation.</p>
 <p>If you are using the default template then you can check out the <a href="../templates/default.md#page-headers">default template headers</a>.</p>
 </div>
-    </article>
+      </article>
+
+      <footer class="site-footer">
+        <h2 class="footer-heading">Markdown Docs</h2>
+
+        
+        <div class="footer-links">
+          
+          <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
+          
+          <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
+          
+        </div>
+        
+
+        <p>
+          Caught a mistake or want to contribute to the documentation?
+          <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/create-docs/index.md">Edit this page on Github</a>
+        </p>
+
+        
+        <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
+        
+
+      </footer>
+    </div>
 
   </div>
 </div>
-
-<footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Markdown Docs</h2>
-
-    
-      <div class="footer-links">
-      
-      <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
-      
-      <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
-      
-      </div>
-    
-
-    <p>
-      Caught a mistake or want to contribute to the documentation?
-      <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/create-docs/index.md">Edit this page on Github</a>
-    </p>
-
-    
-    <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
-    
-  </div>
-
-</footer>
 
 
 <script src="/markdown-docs/template-files/js/main.js"></script>

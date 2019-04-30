@@ -148,7 +148,7 @@ pre > code {
 /**
  * Clearfix
  */
-.footer-col-wrapper:after, .wrapper:after {
+.wrapper:after {
   content: "";
   display: table;
   clear: both;
@@ -231,71 +231,6 @@ pre > code {
   }
 }
 
-/**
- * Site footer
- */
-.site-footer {
-  border-top: 1px solid #e8e8e8;
-  padding: 30px 0;
-}
-
-.footer-heading {
-  font-size: 18px;
-  margin-bottom: 15px;
-}
-
-.contact-list,
-.social-media-list {
-  list-style: none;
-  margin-left: 0;
-}
-
-.footer-col-wrapper {
-  font-size: 15px;
-  color: #828282;
-  margin-left: -15px;
-}
-
-.footer-col {
-  float: left;
-  margin-bottom: 15px;
-  padding-left: 15px;
-}
-
-.footer-col-1 {
-  width: -webkit-calc(35% - (30px / 2));
-  width: calc(35% - (30px / 2));
-}
-
-.footer-col-2 {
-  width: -webkit-calc(20% - (30px / 2));
-  width: calc(20% - (30px / 2));
-}
-
-.footer-col-3 {
-  width: -webkit-calc(45% - (30px / 2));
-  width: calc(45% - (30px / 2));
-}
-
-@media screen and (max-width: 800px) {
-  .footer-col-1,
-.footer-col-2 {
-    width: -webkit-calc(50% - (30px / 2));
-    width: calc(50% - (30px / 2));
-  }
-
-  .footer-col-3 {
-    width: -webkit-calc(100% - (30px / 2));
-    width: calc(100% - (30px / 2));
-  }
-}
-@media screen and (max-width: 600px) {
-  .footer-col {
-    float: none;
-    width: -webkit-calc(100% - (30px / 2));
-    width: calc(100% - (30px / 2));
-  }
-}
 /**
  * Page content
  */
@@ -449,6 +384,13 @@ pre > code {
   font-weight: bold;
 }
 
+body {
+  background-color: #424242;
+}
+body .page-content {
+  background: #fdfdfd;
+}
+
 article {
   padding: 0 15px;
 }
@@ -525,6 +467,7 @@ table tr th :last-child, table tr td :last-child {
   display: flex;
   padding-left: 0;
   padding-right: 0;
+  align-items: stretch;
 }
 @media screen and (max-width: 800px) {
   .page-content .wrapper {
@@ -539,9 +482,11 @@ table tr th :last-child, table tr td :last-child {
     opacity: 0.4;
   }
 }
-.page-content .wrapper article {
+.page-content .wrapper .page-content-main {
   flex: 1;
   overflow: auto;
+}
+.page-content .wrapper article {
   padding-left: 30px;
   padding-right: 30px;
   padding-top: 10px;
@@ -630,7 +575,7 @@ table tr th :last-child, table tr td :last-child {
   padding: 5px 0;
 }
 .page-content .wrapper.scroll-nav article {
-  margin-left: 280px;
+  margin-left: 275px;
 }
 @media screen and (max-width: 800px) {
   .page-content .wrapper.scroll-nav article {
@@ -685,17 +630,12 @@ table tr th :last-child, table tr td :last-child {
   padding: 0;
 }
 
+.site-footer {
+  padding-left: 30px;
+}
 .site-footer.scroll-nav {
-  margin-left: 280px;
+  margin-left: 275px;
   margin-bottom: 120px;
-}
-.site-footer .footer-col.footer-col-2 {
-  width: 0;
-  display: none;
-}
-.site-footer .footer-col.footer-col-3 {
-  width: -webkit-calc(65% - (30px / 2));
-  width: calc(65% - (30px / 2));
 }
 .site-footer .footer-fine-print {
   font-size: 12px;
