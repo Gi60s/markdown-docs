@@ -1,6 +1,14 @@
 $side-padding: 30px;
 $left-nav-width: 250px;
 
+body {
+  background-color: $grey-color-dark;
+
+  .page-content {
+    background: $background-color;
+  }
+}
+
 article {
   padding: 0 15px;
 }
@@ -86,6 +94,7 @@ table {
     display: flex;
     padding-left: 0;
     padding-right: 0;
+    align-items: stretch;
 
     @include media-query($on-laptop) {
       padding-left: 0;
@@ -106,10 +115,12 @@ table {
 
     }
 
-    article {
-
+    .page-content-main {
       flex: 1;
       overflow: auto;
+    }
+
+    article {
       padding-left: $side-padding;
       padding-right: $side-padding;
       padding-top: 10px;
@@ -212,7 +223,7 @@ table {
 
     &.scroll-nav {
       article {
-        margin-left: $left-nav-width + $side-padding;
+        margin-left: $left-nav-width + $side-padding - 5px;
 
         @include media-query($on-laptop) {
           margin-left: $side-padding;
@@ -276,22 +287,11 @@ table {
 }
 
 .site-footer {
+  padding-left: $side-padding;
+
   &.scroll-nav {
-    margin-left: $left-nav-width + $side-padding;
+    margin-left: $left-nav-width + $side-padding - 5px;
     margin-bottom: 120px;
-  }
-
-  .footer-col {
-
-    &.footer-col-2 {
-      width: 0;
-      display: none;
-    }
-
-    &.footer-col-3 {
-      width: -webkit-calc(65% - (30px / 2));
-      width: calc(65% - (30px / 2));
-    }
   }
 
   .footer-fine-print {

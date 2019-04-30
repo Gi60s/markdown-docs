@@ -50,48 +50,48 @@
     <nav class="nav-list"><%- navigation %></nav>
     <% } %>
 
-    <article class="post">
-      <header class="post-header">
-        <% if (page.subtitle) { %><div class="post-subtitle"><%= page.subtitle %></div><% } %>
-        <% if (page.title) { %><h1 class="post-title"><%= page.title %></h1><% } %>
-      </header>
+    <div class="page-content-main">
+      <article class="post">
+        <header class="post-header">
+          <% if (page.subtitle) { %><div class="post-subtitle"><%= page.subtitle %></div><% } %>
+          <% if (page.title) { %><h1 class="post-title"><%= page.title %></h1><% } %>
+        </header>
 
-      <% if (toc) { %>
-      <div>
-        <p><strong>Page Content</strong></p>
-        <div class="section-nav"><%- toc %></div>
-      </div>
-      <% } %>
+        <% if (toc) { %>
+        <div>
+          <p><strong>Page Content</strong></p>
+          <div class="section-nav"><%- toc %></div>
+        </div>
+        <% } %>
 
-      <div class="post-content"><%- content %></div>
-    </article>
+        <div class="post-content"><%- content %></div>
+      </article>
+
+      <footer class="site-footer">
+        <h2 class="footer-heading"><%= site.title %></h2>
+
+        <% if (template.footerLinks) { %>
+        <div class="footer-links">
+          <% for (var i = 0; i < template.footerLinks.length; i++) { %>
+          <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
+          <% } %>
+        </div>
+        <% } %>
+
+        <p>
+          Caught a mistake or want to contribute to the documentation?
+          <a href="<%= site.editDocsUrl %>/<%= page.path %>">Edit this page on Github</a>
+        </p>
+
+        <% if (template.finePrint) { %>
+        <div class="footer-fine-print"><%- template.finePrint %></div>
+        <% } %>
+
+      </footer>
+    </div>
 
   </div>
 </div>
-
-<footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading"><%= site.title %></h2>
-
-    <% if (template.footerLinks) { %>
-      <div class="footer-links">
-      <% for (var i = 0; i < template.footerLinks.length; i++) { %>
-      <div><a href="<%= template.footerLinks[i].href %>"><%= template.footerLinks[i].title %></a></div>
-      <% } %>
-      </div>
-    <% } %>
-
-    <p>
-      Caught a mistake or want to contribute to the documentation?
-      <a href="<%= site.editDocsUrl %>/<%= page.path %>">Edit this page on Github</a>
-    </p>
-
-    <% if (template.finePrint) { %>
-    <div class="footer-fine-print"><%- template.finePrint %></div>
-    <% } %>
-  </div>
-
-</footer>
 
 
 <script src="<%= site.basePath %>/template-files/js/main.js"></script>
