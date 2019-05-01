@@ -19,11 +19,14 @@ const send = require('send')
  * @returns {{stop(): void}}
  */
 module.exports = function (source, options = {}) {
+  const configFilePath = options.configFilePath
+    ? path.resolve(process.cwd(), options.configFilePath)
+    : path.resolve(source, 'markdown-docs.js')
   const port = options.hasOwnProperty('port') ? options.port : 8080
   const destination = options.hasOwnProperty('destination')
     ? path.resolve(process.cwd(), options.destination)
     : path.resolve(tempDir, 'markdown-docs', String(Date.now()) + String(Math.floor(Math.random() * 900000) + 100000))
-  const configPromise = readConfig(source, options.configFilePath)
+  const configPromise = readConfig(configFilePath)
   let buildPromise
   let buildPending = false
   let debounce

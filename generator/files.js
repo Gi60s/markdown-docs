@@ -5,6 +5,7 @@ const util = require('util')
 
 const files = module.exports = {
   copy,
+  eachFile,
   ensureDirectoryExists,
   isDirectory,
   isFile,
@@ -30,6 +31,22 @@ async function copy (source, dest, filter) {
       await files.ensureDirectoryExists(dest)
       const promises = fileNames.map(fileName => copy(path.resolve(source, fileName), path.resolve(dest, fileName), filter))
       return Promise.all(promises)
+    }
+  }
+}
+
+async function eachFile (filePath, handler) {
+  const stats = await files.stat(filePath)
+  if (stats.isDirectory()) {
+    const fileNames = await files.readdir(filePath)
+    const promises = fileNames.map(fileName => eachFile(path.resolve(filePath, fileName), handler))
+    return Promise.all(promises).then(() => {})
+  } else if (stats.isFile()) {
+    if (handler.length > 1) {
+      const content = await files.readFile(filePath, 'utf8')
+      return handler(filePath, content)
+    } else {
+      return handler(filePath)
     }
   }
 }

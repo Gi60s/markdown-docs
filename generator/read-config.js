@@ -1,7 +1,6 @@
-const path = require('path')
+'use strict'
 
-module.exports = function (source, configFilePath) {
-  configFilePath = configFilePath ? path.resolve(process.cwd(), configFilePath) : path.resolve(source, 'markdown-docs.js')
+module.exports = function (configFilePath) {
   try {
     delete require.cache[configFilePath]
     const config = require(configFilePath)

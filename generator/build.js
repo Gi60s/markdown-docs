@@ -3,6 +3,7 @@ const ejs = require('ejs')
 const { EOL } = require('os')
 const findBrokenLinks = require('./find-broken-links')
 const files = require('./files')
+const fileErrors = require('./file-errors')
 const hljs = require('highlight.js')
 const marked = require('marked')
 const path = require('path')
@@ -12,7 +13,7 @@ const sass = require('sass')
 const util = require('./util')
 
 const rxHttp = /^https?:\/\//
-const rxMarkdownFilePath = /\.md$/i
+const rxImport = /^:: import ([\s\S]+)$/
 
 // TODO: static web page servers that require the .html extension
 
@@ -28,11 +29,9 @@ module.exports = async function (source, destination, { configFilePath, template
   if (pathIsInside(destination, source)) throw Error('The destination directory cannot be within the source directory')
   if (pathIsInside(source, destination)) throw Error('The source directory cannot be within the destination directory')
 
-  // remove old destination content
-  await files.rmDir(destination)
-
   // get the build configuration
-  const config = readConfig(source, configFilePath)
+  configFilePath = configFilePath ? path.resolve(process.cwd(), configFilePath) : path.resolve(source, 'markdown-docs.js')
+  const config = readConfig(configFilePath)
   if (config.template && config.template.path && !template) template = config.template.path
 
   // locate the template directory to use
@@ -54,29 +53,89 @@ module.exports = async function (source, destination, { configFilePath, template
     return result
   })()
 
-  // acquire the site structure
-  const structure = await getSiteStructure({
-    destination,
-    map: {},
-    root: source,
-    source
+  // set up file errors and file warnings
+  const fe = fileErrors()
+  const fw = fileErrors()
+
+  const markdownStore = {}
+  await files.eachFile(source, async function (filePath) {
+    if (path.extname(filePath).toLowerCase() !== '.md') return
+
+    const content = String(await files.readFile(filePath, 'utf8'))
+    const [ , header, body ] = /(?:^---([\s\S]+?)---$\s*)?([\s\S]+)?/gm.exec(content)
+
+    // parse page headers if they exist
+    const headers = Object.assign({}, config.page)
+    if (header) {
+      header
+        .split(EOL)
+        .forEach(line => {
+          const index = line.indexOf(':')
+          const key = index !== -1 ? line.substring(0, index).trim() : line
+          if (key) headers[key] = index !== -1 ? line.substring(index + 1).trim() : ''
+        })
+      if (headers.render === 'false') return // this markdown file should not be rendered
+      if (!headers.title) fe.add('Missing required "title" header')
+    } else {
+      fe.add(filePath, 'Missing required page headers section.')
+    }
+
+    // convert links
+    const rxFixLinks = /(\[[^\]]+?]) *(: *([\s\S]+?)$|\(([\s\S]+?)\))/gm
+    let newBody = ''
+    let index = 0
+    let match
+    while ((match = rxFixLinks.exec(body))) {
+      const link = match[3] || match[4]
+      if (!rxHttp.test(link)) {
+        const [ linkPath, linkHash ] = link.split('#')
+        const fullPathToLink = path.resolve(path.dirname(filePath), (linkPath || filePath).split('/').join(path.sep))
+        const relPathToLink = path.relative(source, fullPathToLink)
+        let newLink = config.site.basePath + '/' + relPathToLink.split(path.sep).join('/')
+        newLink = newLink.toLowerCase().endsWith('/index.md')
+          ? newLink.substring(0, newLink.length - 9)
+          : newLink.substring(0, newLink.length - 3)
+        if (linkHash) newLink += '#' + linkHash
+        newBody += body.substring(index, match.index) + match[1] +
+          (match[2].startsWith(':') ? ': ' + newLink : '(' + newLink + ')')
+      } else {
+        newBody += body.substring(index, match.index) + match[0]
+      }
+      index = match.index + match[0].length
+    }
+    newBody += body.substring(index)
+
+    const relKey = path.relative(source, filePath).split(path.sep).join('/')
+    const urlPath = config.site.basePath + '/' + relKey
+    const isIndex = urlPath.toLowerCase().endsWith('/index.md')
+    markdownStore[filePath] = {
+      content: newBody,
+      filePath,
+      headers,
+      isIndex,
+      urlPath: urlPath.substring(0, urlPath.length - (isIndex ? 9 : 3)),
+      urlPathFull: urlPath
+    }
   })
 
-  // organize navigation
-  const nav = organizeNavigation(structure, source, true)
+  // build the site navigation structure
+  const structure = (await getSiteStructure(source, []))[0]
+  const nav = organizeNavigation(structure, markdownStore, fe.add)
 
-  // flatten the structure
-  const map = flattenSiteStructure(structure, {})
+  // if there are file errors then report now and exit
+  if (fe.hasErrors()) {
+    console.error(fe.report('[' + (new Date().toLocaleTimeString()) + '] ERROR: Unable to build due to one or more file errors:'))
+    return false
+  }
 
-  // copy over all assets except css directory
+  // remove old destination content
+  await files.rmDir(destination)
+
+  // copy over all template assets
   const assetsDir = path.resolve(template, 'assets')
   if (await files.isDirectory(assetsDir)) {
     const dest = path.resolve(destination, 'template-files')
-    await files.ensureDirectoryExists(dest)
-    await files.copy(assetsDir, dest, source => {
-      const rel = path.relative(assetsDir, source)
-      return rel !== 'css'
-    })
+    await files.copy(assetsDir, dest)
   }
 
   // build the template css
@@ -89,78 +148,69 @@ module.exports = async function (source, destination, { configFilePath, template
     })
   }
 
+  // copy all files that don't need special rendering
+  await files.copy(source, destination, function (filePath) {
+    if (filePath === configFilePath) return false
+    const data = markdownStore[filePath]
+    return !data || data.headers.render === 'false'
+  })
+
   // build the static site
   const customBuilderPath = path.resolve(template, 'builder.js')
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
-  await build({ builder, config, destination, layouts, map, nav, root: source, source })
+  await build({ builder, config, destination, fileErrors: fe.add, layouts, markdownStore, nav, source })
 
   // find broken links
-  const broken = await findBrokenLinks(source)
-  if (broken.length > 0) console.error('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files has missing or broken links:\n  ' + broken.join('\n  '))
+  await findBrokenLinks(source, fw.add)
+  if (fw.hasErrors()) console.error(fw.report('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files have missing or broken links:'))
 }
 
-async function build ({ builder, config, destination, layouts, map, nav, root, source }) {
-  const stats = await files.stat(source)
-  const rel = path.relative(root, source)
+async function build ({ builder, config, destination, fileErrors, layouts, markdownStore, nav, source }) {
+  const promises = Object.keys(markdownStore)
+    .map(async filePath => {
+      const data = markdownStore[filePath]
+      if (data.headers.render !== 'false') {
+        // final markdown modifications
+        const content = await runImports(source, filePath, markdownStore, fileErrors)
 
-  if (stats.isDirectory()) {
-    await files.ensureDirectoryExists(destination)
-    const fileNames = await files.readdir(source)
-    const promises = fileNames.map(async fileName => {
-      return build({
-        builder,
-        config,
-        destination: path.resolve(destination, fileName),
-        layouts,
-        map,
-        nav,
-        root,
-        source: path.resolve(source, fileName)
-      })
-    })
-    return Promise.all(promises)
-
-  } else if (stats.isFile()) {
-    const ext = path.extname(source)
-    const data = map[rel]
-    const isMarkdown = ext.toLowerCase() === '.md'
-    if (data) {
-      if (isMarkdown) {
+        // get EJS params and render
         const params = {
           content: builder && builder.markdown
-            ? builder.markdown(data.content, marked)
-            : marked(data.content, {
+            ? builder.markdown(content, marked)
+            : marked(content, {
               highlight: (code, style) => {
                 return hljs.highlight(style, code).value
               }
             }),
-          navigation: createNavHtml(nav, config.site.basePath, rel, 0),
-          page: Object.assign({}, config.page, data.page, {
-            description: config.site.description || data.page.description || '',
-            directory: path.dirname(data.path),
-            fileName: path.basename(data.path),
+          navigation: createNavHtml(nav, filePath, 0),
+          page: Object.assign({}, config.page, data.headers, {
+            description: config.site.description || data.headers.description || '',
+            directory: path.dirname(data.filePath),
+            fileName: path.basename(data.filePath),
             path: data.path
           }),
           site: config.site,
           template: Object.assign({}, config.template),
-          toc: buildToc(data.content, data.page.toc)
+          toc: buildToc(content, data.headers.toc)
         }
-        const html = layouts[data.page.layout || 'default'](params)
-        const destinationPath = path.resolve(path.dirname(destination), path.basename(destination, ext) + '.html')
+        const html = layouts[data.headers.layout || 'default'](params)
+
+        // determine write location and write
+        const ext = path.extname(filePath)
+        const relFilePath = path.relative(source, filePath)
+        const targetDirectory = path.resolve(destination, path.dirname(relFilePath))
+        const destinationPath = path.resolve(targetDirectory, path.basename(relFilePath, ext) + '.html')
+        await files.ensureDirectoryExists(targetDirectory)
         await files.writeFile(destinationPath, html)
-      } else if (source !== path.resolve(root, 'markdown-docs.js')) {
-        await files.copy(source, destination)
       }
-    } else if (source !== path.resolve(root, 'markdown-docs.js') && !isMarkdown) {
-      await files.copy(source, destination)
-    }
-  }
+    })
+  return Promise.all(promises)
 }
 
 function buildToc (content, tocDepth) {
   const root = util.getMarkdownHeadings(content)
 
-  tocDepth = tocDepth === 'true' ? 6 : +tocDepth
+  tocDepth = tocDepth === 'true' || tocDepth === true ? 6 : +tocDepth
   if (isNaN(tocDepth) || tocDepth <= 0) return ''
 
   return root.children.length ? '<ul class="toc">' + buildTocHtml(root.children, tocDepth, 1, {}) + '</ul>' : ''
@@ -178,184 +228,87 @@ function buildTocHtml (children, allowedDepth, depth, store) {
   return html
 }
 
-function createNavHtml (nav, basePath, currentPath, depth) {
-  let html = ''
-  if (depth > 0) {
-    html += '<li>'
-    let route = basePath + '/' + (nav.redirect || nav.path)
-      .replace(/(?:^|\/)index.md/i, '')
-      .replace(/\.md$/, '')
-    html += '<a href="' + route + '"' + (nav.path === currentPath ? ' class="current-page"' : '') + '>' + nav.title + '</a>'
+function createNavHtml (nav, currentPath, depth) {
+  if (nav.isIndex) return ''
+  let html = '<li><a href="' + nav.url + '">' + nav.title + '</a>'
+  if (nav.children && nav.children.length) {
+    html += '<ul>' + nav.children.map(child => createNavHtml(child, currentPath, depth + 1)).join('') + '</ul>'
   }
-  if (nav.links) {
-    html += '<ul>'
-    nav.links.forEach(link => {
-      html += createNavHtml(link, basePath, currentPath, depth + 1)
-    })
-    html += '</ul>'
-  }
-  if (depth > 0) html += '</li>'
-  return html
+  html += '</li>'
+  return depth === 0 ? '<ul>' + html + '</ul>' : html
 }
 
-function flattenSiteStructure (structure, map) {
-  if (!structure.ignore) {
-    if (structure.path) map[structure.path] = structure;
-    if (structure.links) {
-      structure.links.forEach(item => flattenSiteStructure(item, map))
-    }
-  }
-  return map;
-}
-
-async function getSiteStructure (options) {
-  const { source } = options
+async function getSiteStructure (source, map) {
   const stats = await files.stat(source)
   if (stats.isDirectory()) {
+    const item = {
+      children: [],
+      filePath: source
+    }
+    map.push(item)
     const fileNames = await files.readdir(source)
-    options.map.links = []
-    const promises = fileNames
-      .map(async fileName => {
-        const map = { parent: options.map }
-        options.map.fileName = path.basename(source)
-        options.map.path = path.relative(options.root, source)
-        options.map.links.push(map)
-        return getSiteStructure({
-          destination: path.resolve(options.destination, fileName),
-          map,
-          root: options.root,
-          source: path.resolve(source, fileName)
-        })
-      })
-    await Promise.all(promises)
-  } else if (stats.isFile()) {
-    const ext = path.extname(source)
-    if (ext.toLowerCase() === '.md') {
-      let rawContent = await files.readFile(source, 'utf8')
+    const promises = fileNames.map(fileName => getSiteStructure(path.resolve(source, fileName), item.children))
+    return Promise.all(promises).then(() => map)
+  } else if (stats.isFile() && path.extname(source).toLowerCase() === '.md') {
+    map.push({ filePath: source })
+  }
+  return map
+}
 
-      // convert internal links that end in .md to their correct navigation equivalent
-      const rxFixLinks = /(\[[^\]]+?]) *(: *([\s\S]+?)$|\(([\s\S]+?)\))/gm
-      let content = ''
-      let index = 0
-      let match
-      while ((match = rxFixLinks.exec(rawContent))) {
-        const link = match[3] || match[4]
-        if (!rxHttp.test(link) && rxMarkdownFilePath.test(link)) {
-          const newLink = link.substring(0, link.length - 3)
-          content += rawContent.substring(index, match.index) + match[1] +
-            (match[2].startsWith(':') ? ': ' + newLink : '(' + newLink + ')')
-        } else {
-          content += rawContent.substring(index, match.index) + match[0]
-        }
-        index = match.index + match[0].length
-      }
-      content += rawContent.substring(index)
+function organizeNavigation (structure, markdownStore, fileError) {
+  if (structure.children) {
+    const nav = { children: [] }
+    let hasNonIndex = false
+    let index
+    let indexNavMenu = true
 
-      // pull off the headers and read them
-      match = /(?:^---([\s\S]+?)---$\s*)?([\s\S]+)?/gm.exec(content)
-      if (match && match[1]) {
-        const params = { toc: 'true' }
-        match[1]
-          .split(EOL)
-          .forEach(line => {
-            const index = line.indexOf(':')
-            const key = index !== -1 ? line.substring(0, index).trim() : line
-            if (key) params[key] = index !== -1 ? line.substring(index + 1).trim() : ''
-          })
-        if (params.title) {
-          options.map.fileName = path.basename(source, ext)
-          options.map.path = path.relative(options.root, source)
-          options.map.page = params
-          options.map.content = (match[2] || '').trim()
-          options.map.navMenu = params.navMenu ? parseMetaString(params.navMenu) : true
-          if (params.redirect) {
-            options.map.ignore = true
-            params.redirect = path.relative(options.root, path.resolve(path.dirname(source), params.redirect))
-          }
-          if (path.basename(source, ext) === 'index') {
-            options.map.index = true
-            options.map.parent.navMenu = options.map.navMenu
-            if (params.navOrder) options.map.navOrder = params.navOrder.split(/ +/)
-          }
-        } else {
-          options.map.copy = true
-          options.map.navMenu = false
-          options.map.path = path.relative(options.root, source)
-        }
+    structure.children.forEach(child => {
+      const result = organizeNavigation(child, markdownStore, fileError)
+      if (result.isIndex) {
+        index = result
       } else {
-        options.map.copy = true
-        options.map.navMenu = false
-        options.map.path = path.relative(options.root, source)
+        hasNonIndex = true
       }
-    } else if (path.basename(source) !== 'markdown-docs.js') {
-      options.map.copy = true
-      options.map.navMenu = false
-      options.map.path = path.relative(options.root, source)
-    } else {
-      options.map.ignore = true
-      options.map.navMenu = false
+      if (result.inNav) nav.children.push(result)
+    })
+
+    if (!index) {
+      if (hasNonIndex) fileError(structure.filePath, 'Missing required index.md file')
+    } else if (indexNavMenu) {
+      nav.inNav = index.inNav
+      nav.title = index.title
+      nav.url = index.url
+
+      const navOrder = index.navOrder ? index.navOrder.split(/ +/) : []
+      navOrder.unshift(index.id)
+      nav.children.sort((a, b) => {
+        if (navOrder) {
+          const i = navOrder.indexOf(a.id)
+          const j = navOrder.indexOf(b.id)
+          if (i === -1 && j === -1) return a.title < b.title ? -1 : 1
+          if (i !== -1 && j === -1) return -1
+          if (i === -1 && j !== -1) return 1
+          return i < j ? -1 : 1
+        } else {
+          return a.title < b.title ? -1 : 1
+        }
+      })
+    }
+
+    return nav
+  } else {
+    const data = markdownStore[structure.filePath]
+    const fileName = path.basename(structure.filePath)
+    const ext = path.extname(structure.filePath)
+    return {
+      id: path.basename(fileName, ext),
+      isIndex: fileName.toLowerCase() === 'index.md',
+      inNav: data.headers.navMenu !== 'false',
+      navOrder: data.headers.navOrder,
+      title: data.headers.title,
+      url: data.urlPath
     }
   }
-  return options.map
-}
-
-function organizeNavigation (structure, source, isRoot) {
-  const index = structure.links.find(v => v.index)
-  if (!index) throw Error('Missing required index.md file in directory: ' + path.resolve(source, structure.path))
-  const result = {
-    fileName: index.fileName,
-    navName: index.fileName === 'index' ? index.path.replace(/\/?index\.md$/, '').split(path.sep).pop() : index.fileName,
-    path: index.path,
-    title: index.page.title
-  }
-  if (index.page.redirect) result.redirect = index.page.redirect
-
-  const filteredLinks = structure.links.filter(item => item.navMenu && !item.index && !item.ignore)
-  if (filteredLinks.length) {
-    result.links = filteredLinks.map(item => {
-      if (item.links) {
-        return organizeNavigation(item, source, false)
-      } else {
-        return {
-          fileName: item.fileName,
-          navName: item.fileName === 'index' ? item.path.replace(/\/?index\.md$/, '').split(path.sep).pop() : item.fileName,
-          path: item.path,
-          title: item.page.title
-        }
-      }
-    })
-
-    result.links.sort((a, b) => {
-      if (index.navOrder) {
-        const i = index.navOrder.indexOf(a.navName)
-        const j = index.navOrder.indexOf(b.navName)
-        if (i === -1 && j === -1) return a.title < b.title ? -1 : 1
-        if (i !== -1 && j === -1) return -1
-        if (i === -1 && j !== -1) return 1
-        return i < j ? -1 : 1
-      } else {
-        return a.title < b.title ? -1 : 1
-      }
-    })
-  }
-
-  if (isRoot) {
-    if (!result.links) result.links = []
-    result.links.unshift({
-      fileName: index.fileName,
-      navName: index.fileName === 'index' ? index.path.replace(/\/?index\.md$/, '').split(path.sep).pop() : index.fileName,
-      path: index.path,
-      title: index.page.title
-    })
-  }
-
-  return result
-}
-
-function parseMetaString (value) {
-  if (value === 'false') return false
-  if (value === 'true') return true
-  return value
 }
 
 async function renderSassFile (filePath, options) {
@@ -404,4 +357,29 @@ async function renderSassFile (filePath, options) {
       })
     }
   }
+}
+
+async function runImports (source, filePath, markdownStore, fileErrors) {
+  const data = markdownStore[filePath]
+  if (!data.ranImports && data.content) {
+    data.ranImports = true
+    const promises = data.content
+      .split(EOL)
+      .map(async line => {
+        const match = rxImport.exec(line)
+        if (!match) return line
+
+        const importFilePath = path.resolve(path.dirname(filePath), match[1])
+        if (markdownStore[importFilePath]) {
+          return runImports(source, importFilePath, markdownStore, fileErrors)
+        } else if (await files.isFile(importFilePath)) {
+          return files.readFile(importFilePath, 'utf8')
+        } else {
+          fileErrors(filePath, 'Cannot import not existing file: ' + match[1])
+        }
+      })
+    const result = await Promise.all(promises)
+    data.content = result.join(EOL)
+  }
+  return data.content
 }

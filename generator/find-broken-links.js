@@ -5,9 +5,9 @@ const path = require('path')
 
 const rxExternalLink = /^https?:\/\//
 
-module.exports = async function (filePath) {
+module.exports = async function (filePath, fileWarning) {
   const store = await getHeadings(filePath, filePath, {})
-  return findBrokenLinks(filePath, filePath, store, [])
+  return findBrokenLinks(filePath, filePath, store, fileWarning)
 }
 
 async function getHeadings (filePath, rootPath, store) {
@@ -30,15 +30,15 @@ async function getHeadings (filePath, rootPath, store) {
   return store
 }
 
-async function findBrokenLinks (filePath, rootPath, existing, missing) {
+async function findBrokenLinks (filePath, rootPath, existing, fileWarning) {
   const stats = await files.stat(filePath)
   if (stats.isDirectory()) {
     const fileNames = await files.readdir(filePath)
     const promises = fileNames.map(async fileName => {
       const fullPath = path.resolve(filePath, fileName)
-      return findBrokenLinks(fullPath, rootPath, existing, missing)
+      return findBrokenLinks(fullPath, rootPath, existing, fileWarning)
     })
-    return Promise.all(promises).then(() => missing)
+    return Promise.all(promises)
   } else if (stats.isFile() && path.extname(filePath).toLowerCase() === '.md') {
     const content = util.removeMarkdownCode(await files.readFile(filePath, 'utf8'))
     const filePathDir = path.dirname(filePath)
@@ -54,12 +54,11 @@ async function findBrokenLinks (filePath, rootPath, existing, missing) {
             : path.resolve(filePathDir, external.split('/').join(path.sep))
           : filePath
         if (!existing.hasOwnProperty(refFilePath)) {
-          missing.push(path.relative(rootPath, filePath) + ' references a file that does not exist: ' + path.relative(rootPath, refFilePath))
+          fileWarning(filePath, 'References a file that does not exist: ' + refFilePath)
         } else if (internal && !existing[refFilePath].hasOwnProperty(internal)) {
-          missing.push(path.relative(rootPath, filePath) + ' references the missing heading "' + internal + '"' + (external ? ' expected in the file: ' + path.relative(rootPath, refFilePath) : ''))
+          fileWarning(filePath, 'References the heading "' + internal + '" that does not exist in: ' + refFilePath)
         }
       }
     }
   }
-  return missing
 }
