@@ -229,8 +229,11 @@ function buildTocHtml (children, allowedDepth, depth, store) {
 }
 
 function createNavHtml (nav, currentPath, depth) {
-  if (nav.isIndex) return ''
-  let html = '<li><a href="' + nav.url + '">' + nav.title + '</a>'
+  if (nav.isIndex && depth !== 1) return ''
+  let html = ''
+  if (depth > 0) {
+    html += '<li><a href="' + nav.url + '"' + (nav.filePath === currentPath ? ' class="current-page"' : '') + '>' + nav.title + '</a>'
+  }
   if (nav.children && nav.children.length) {
     html += '<ul>' + nav.children.map(child => createNavHtml(child, currentPath, depth + 1)).join('') + '</ul>'
   }
@@ -275,6 +278,7 @@ function organizeNavigation (structure, markdownStore, fileError) {
     if (!index) {
       if (hasNonIndex) fileError(structure.filePath, 'Missing required index.md file')
     } else if (indexNavMenu) {
+      nav.filePath = index.filePath
       nav.inNav = index.inNav
       nav.title = index.title
       nav.url = index.url
@@ -301,6 +305,7 @@ function organizeNavigation (structure, markdownStore, fileError) {
     const fileName = path.basename(structure.filePath)
     const ext = path.extname(structure.filePath)
     return {
+      filePath: structure.filePath,
       id: path.basename(fileName, ext),
       isIndex: fileName.toLowerCase() === 'index.md',
       inNav: data.headers.navMenu !== 'false',
