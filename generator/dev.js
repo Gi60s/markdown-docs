@@ -53,6 +53,10 @@ module.exports = function (source, options = {}) {
         pathName += '/index.html'
       } else if (await files.isFile(filePath + '.html')) {
         pathName += '.html'
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' })
+        res.end('Page not found')
+        return
       }
     }
 
