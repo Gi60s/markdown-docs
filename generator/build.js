@@ -261,16 +261,26 @@ async function getSiteStructure (options) {
             const key = index !== -1 ? line.substring(0, index).trim() : line
             if (key) params[key] = index !== -1 ? line.substring(index + 1).trim() : ''
           })
-        options.map.fileName = path.basename(source, ext)
-        options.map.path = path.relative(options.root, source)
-        options.map.page = params
-        options.map.content = (match[2] || '').trim()
-        options.map.navMenu = params.navMenu ? parseMetaString(params.navMenu) : true
-        if (path.basename(source, ext) === 'index') {
-          options.map.index = true
-          options.map.parent.navMenu = options.map.navMenu
-          if (params.navOrder) options.map.navOrder = params.navOrder.split(/ +/)
+        if (params.title) {
+          options.map.fileName = path.basename(source, ext)
+          options.map.path = path.relative(options.root, source)
+          options.map.page = params
+          options.map.content = (match[2] || '').trim()
+          options.map.navMenu = params.navMenu ? parseMetaString(params.navMenu) : true
+          if (path.basename(source, ext) === 'index') {
+            options.map.index = true
+            options.map.parent.navMenu = options.map.navMenu
+            if (params.navOrder) options.map.navOrder = params.navOrder.split(/ +/)
+          }
+        } else {
+          options.map.copy = true
+          options.map.navMenu = false
+          options.map.path = path.relative(options.root, source)
         }
+      } else {
+        options.map.copy = true
+        options.map.navMenu = false
+        options.map.path = path.relative(options.root, source)
       }
     } else if (path.basename(source) !== 'markdown-docs.js') {
       options.map.copy = true
