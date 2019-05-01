@@ -181,7 +181,7 @@ function createNavHtml (nav, basePath, currentPath, depth) {
   let html = ''
   if (depth > 0) {
     html += '<li>'
-    let route = basePath + '/' + nav.path
+    let route = basePath + '/' + (nav.redirect || nav.path)
       .replace(/(?:^|\/)index.md/i, '')
       .replace(/\.md$/, '')
     html += '<a href="' + route + '"' + (nav.path === currentPath ? ' class="current-page"' : '') + '>' + nav.title + '</a>'
@@ -267,6 +267,9 @@ async function getSiteStructure (options) {
           options.map.page = params
           options.map.content = (match[2] || '').trim()
           options.map.navMenu = params.navMenu ? parseMetaString(params.navMenu) : true
+          if (params.redirect) {
+            params.redirect = path.relative(options.root, path.resolve(path.dirname(source), params.redirect))
+          }
           if (path.basename(source, ext) === 'index') {
             options.map.index = true
             options.map.parent.navMenu = options.map.navMenu
@@ -303,6 +306,7 @@ function organizeNavigation (structure, source, isRoot) {
     path: index.path,
     title: index.page.title
   }
+  if (index.page.redirect) result.redirect = index.page.redirect
 
   const filteredLinks = structure.links.filter(item => item.navMenu && !item.index && !item.ignore)
   if (filteredLinks.length) {
