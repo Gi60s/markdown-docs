@@ -25,9 +25,9 @@ subtitle: Templates
 
 **Details**
 
-Your markdown pages can specify which template layout they want to user in their [headers](../create-docs/index.md#headers). If a markdown file does not specify which template to use then the `default` template will be used. Therefore, every template must define a `default` template.
+Your markdown pages can specify which template layout they want to user in their [headers](../create-site/index.md#headers). If a markdown file does not specify which template to use then the `default` template will be used. Therefore, every template must define a `default` template.
 
-To create a layout create an `html` file inside the `layouts` directory. The name you give this file will be the name of the layout that your markdown files can reference it by. For example, if you have a layout file named `main.html` then your markdown file can include in its [headers](../create-docs/index.md#headers) `layout: main` to select this layout.
+To create a layout create an `html` file inside the `layouts` directory. The name you give this file will be the name of the layout that your markdown files can reference it by. For example, if you have a layout file named `main.html` then your markdown file can include in its [headers](../create-site/index.md#headers) `layout: main` to select this layout.
 
 On render, a template receives data about what is to be rendered, including:
 
@@ -35,11 +35,11 @@ On render, a template receives data about what is to be rendered, including:
 
 - navigation - The HTML rendered navigation based on the documentations directory structure.
 
-- page - Page [headers](../create-docs/index.md#headers) as defined by your markdown files as well as default page header values.
+- page - Page [headers](../create-site/index.md#headers) as defined by your markdown files as well as default page header values.
 
-- site - Site variables as defined in the documentation's [configuration file](../create-docs/index.md#configuration).
+- site - Site variables as defined in the documentation's [configuration file](../create-site/index.md#configuration).
 
-- toc - A page's table of contents menu, rendered as specified by the page [headers](../create-docs/index.md#headers) as HTML.
+- toc - A page's table of contents menu, rendered as specified by the page [headers](../create-site/index.md#headers) as HTML.
 
 **Example**
 
@@ -90,7 +90,7 @@ On render, a template receives data about what is to be rendered, including:
 
 - [SASS](https://www.npmjs.com/package/sass) files that have a comment `// SASS bootstrap` will be rendered to CSS.
 
-- [SASS](https://www.npmjs.com/package/sass) files that are bootstrapped can also take [configuration file input](../create-docs/index.md#configuration) to overwrite default values.
+- [SASS](https://www.npmjs.com/package/sass) files that are bootstrapped can also take [configuration file input](../create-site/index.md#configuration) to overwrite default values.
 
 **Description**
 
@@ -100,7 +100,7 @@ While defining your SASS files there may be certain values that you would like t
 
 **Example**
 
-In this example we set the body default color to `#333` but this can be overwritten if the `textColor` is specified in the [configuration file's cssVars object](../create-docs/index.md#configuration).
+In this example we set the body default color to `#333` but this can be overwritten if the `textColor` is specified in the [configuration file's cssVars object](../create-site/index.md#configuration).
 
 *SCSS File*
 

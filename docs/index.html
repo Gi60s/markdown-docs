@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Markdown Docs | Home</title>
+  <title>Markdown Docs | Markdown Docs</title>
   
 
   <link rel="icon" href="/markdown-docs/favicon.png">
@@ -47,53 +47,40 @@
 
     
     <div class="nav-screen"></div>
-    <nav class="nav-list"><ul><li><a href="/markdown-docs/" class="current-page">Home</a></li><li><a href="/markdown-docs/create-docs">Creating Documentation</a></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></nav>
+    <nav class="nav-list"><ul><ul><li><a href="/markdown-docs" class="current-page">Markdown Docs</a></li><li><a href="/markdown-docs/create-site">Create a Site</a><ul><li><a href="/markdown-docs/create-site/configuration">Configuration</a></li><li><a href="/markdown-docs/create-site/links">Links</a></li><li><a href="/markdown-docs/create-site/pages">Pages</a></li></ul></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></li></ul></nav>
     
 
     <div class="page-content-main">
       <article class="post">
         <header class="post-header">
           
-          <h1 class="post-title">Home</h1>
+          <h1 class="post-title">Markdown Docs</h1>
         </header>
 
         
-        <div>
-          <p><strong>Page Content</strong></p>
-          <div class="section-nav"><ul class="toc"><li><a href="#documentation-made-easy">Documentation Made Easy</a></li><li><a href="#installation">Installation</a></li><li><a href="#usage">Usage</a><ul><li><a href="#develop-documentation">Develop Documentation</a></li><li><a href="#build-documentation">Build Documentation</a></li></ul></li></ul></div>
-        </div>
-        
 
-        <div class="post-content"><h1 id="documentation-made-easy">Documentation Made Easy</h1>
-<ol>
-<li><p>Create a directory to contain your markdown files.</p>
-</li>
-<li><p>Create multiple markdown files in the directory. One of them must be named <code>index.md</code>.</p>
-</li>
-<li><p>Start markdown-docs: <code>markdown-docs dev /path/to/directory</code></p>
-</li>
-<li><p>Open your browser to <code>http://localhost:8080</code></p>
-</li>
-</ol>
-<p>Create documentation from markdown that can be served from any static web server.</p>
+        <div class="post-content"><h2 id="what-is-this">What is This?</h2>
+<p>A minimal configuration, markdown to static site generator.</p>
+<p><strong>Features:</strong></p>
 <ul>
-<li>Supports Github pages</li>
-<li>Supports custom templates</li>
-<li>Auto generates navigation</li>
-<li>Can auto generate table of contents per page</li>
+<li><p>A clean, simple, mobile ready, template provided as default UI.</p>
+</li>
+<li><p>Easy to create custom templates.</p>
+</li>
+<li><p>Compatible with Github pages. </p>
+</li>
 </ul>
-<p>This documentation was created using this tool and the built in <a href="templates/default">default template</a> but you can also create your own <a href="templates/custom">custom template</a> to fully customize how it looks and operates.</p>
-<h1 id="installation">Installation</h1>
+<h2 id="installation">Installation</h2>
 <pre><code class="language-bash">$ npm install -g @gi60s/markdown-docs</code></pre>
-<h1 id="usage">Usage</h1>
-<h3 id="develop-documentation">Develop Documentation</h3>
-<p>While you&#39;re writing your documentation you can run a server that will both serve your documentation through a browser and auto rebuild your documentation as you make changes.</p>
-<pre><code class="language-bash">$ markdown-docs dev ./<span class="hljs-built_in">source</span>/directory ./destination/directory</code></pre>
-<p>It is also possible to specify a <a href="templates/custom">custom template</a> to use for generating your documentation.</p>
-<pre><code class="language-bash">$ markdown-docs dev ./<span class="hljs-built_in">source</span>/directory ./destination/directory ./my-custom-template-directory</code></pre>
-<h3 id="build-documentation">Build Documentation</h3>
-<p>This will build your documentation once. It will not watch for changes and auto rebuild. It will not serve your documentation to a browser.</p>
-<pre><code class="language-bash">$ markdown-docs build ./<span class="hljs-built_in">source</span>/directory ./destination/directory</code></pre>
+<h2 id="initialize-new-site">Initialize New Site</h2>
+<p>This command will initialize a new site&#39;s source directory with several markdown documents and will begin serving them.</p>
+<p>After running this command, check out the section on <a href="/markdown-docs/create-site">creating documentation</a>.</p>
+<pre><code class="language-bash">$ markdown-docs init --serve /path/to/markdown/directory</code></pre>
+<h2 id="get-help">Get Help</h2>
+<p>To get general help:</p>
+<pre><code class="language-bash">$ markdown-docs <span class="hljs-built_in">help</span></code></pre>
+<p>To get specific help about a command:</p>
+<pre><code class="language-bash">$ markdown-docs dev --<span class="hljs-built_in">help</span></code></pre>
 </div>
       </article>
 
@@ -102,7 +89,7 @@
         
         <p>
           Caught a mistake or want to contribute to the documentation?
-          <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/index.md">Edit this page on Github</a>
+          <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/" target="_blank">Edit this page on Github</a>
         </p>
         
 
@@ -113,9 +100,9 @@
         
         <div class="footer-links">
           
-          <div><a href="https://github.com/Gi60s/markdown-docs">Github</a></div>
+          <div><a href="https://github.com/Gi60s/markdown-docs" target="_blank">Github</a></div>
           
-          <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs">NPM</a></div>
+          <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs" target="_blank">NPM</a></div>
           
         </div>
         
