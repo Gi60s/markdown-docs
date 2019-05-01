@@ -56,6 +56,7 @@ module.exports = function (source, options = {}) {
       }
     }
 
+    if (pathName.endsWith('.html')) res.setHeader('Cache-Control', 'no-store')
     send(req, pathName, { root: destination }).pipe(res)
   });
 
