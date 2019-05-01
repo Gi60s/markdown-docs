@@ -123,8 +123,9 @@ async function build ({ builder, config, destination, layouts, map, nav, root, s
   } else if (stats.isFile()) {
     const ext = path.extname(source)
     const data = map[rel]
+    const isMarkdown = ext.toLowerCase() === '.md'
     if (data) {
-      if (ext.toLowerCase() === '.md') {
+      if (isMarkdown) {
         const params = {
           content: builder && builder.markdown
             ? builder.markdown(data.content, marked)
@@ -150,7 +151,7 @@ async function build ({ builder, config, destination, layouts, map, nav, root, s
       } else if (source !== path.resolve(root, 'markdown-docs.js')) {
         await files.copy(source, destination)
       }
-    } else if (source !== path.resolve(root, 'markdown-docs.js')) {
+    } else if (source !== path.resolve(root, 'markdown-docs.js') && !isMarkdown) {
       await files.copy(source, destination)
     }
   }
@@ -268,6 +269,7 @@ async function getSiteStructure (options) {
           options.map.content = (match[2] || '').trim()
           options.map.navMenu = params.navMenu ? parseMetaString(params.navMenu) : true
           if (params.redirect) {
+            options.map.ignore = true
             params.redirect = path.relative(options.root, path.resolve(path.dirname(source), params.redirect))
           }
           if (path.basename(source, ext) === 'index') {
