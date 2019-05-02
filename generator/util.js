@@ -46,8 +46,8 @@ function getMarkdownHeadings (content) {
       root.all.push(next)
     } else {
       let p = last.parent
-      while (p.level !== next.level) p = p.parent
-      next.parent = p.parent
+      while (p.level < next.level && p.parent) p = p.parent
+      next.parent = p.parent || root
       next.parent.children.push(next)
       root.all.push(next)
     }
