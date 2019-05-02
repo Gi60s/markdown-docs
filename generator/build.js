@@ -13,7 +13,6 @@ const sass = require('sass')
 const util = require('./util')
 
 const rxHttp = /^https?:\/\//
-const rxImport = /^:: import ([\s\S]+)$/
 
 // TODO: static web page servers that require the .html extension
 
@@ -191,7 +190,7 @@ async function build ({ builder, codeBlocks, config, destination, fileErrors, la
         }
 
         // final markdown modifications
-        let content = await runImports(source, filePath, markdownStore, fileErrors)
+        let content = await runImports(source, filePath, markdownStore, codeBlocks, fileErrors)
 
         // add to EJS params and render
         params.content = builder && builder.markdown
@@ -374,27 +373,33 @@ async function renderSassFile (filePath, options) {
   }
 }
 
-async function runImports (source, filePath, markdownStore, fileErrors) {
+async function runImports (source, filePath, markdownStore, codeBlocks, fileErrors) {
   const data = markdownStore[filePath]
+  const ranges = codeBlocks[filePath] || []
   if (!data.ranImports && data.content) {
     data.ranImports = true
-    const promises = data.content
-      .split(EOL)
-      .map(async line => {
-        const match = rxImport.exec(line)
-        if (!match) return line
+    const rxImport = /{% import ([\s\S]+) %}/g
+    const content = data.content
+    let index = 0
+    let result = ''
+    let match
+    while ((match = rxImport.exec(data.content))) {
+      result += content.substring(index, match.index)
+      index = match.index + match[0].length
 
-        const importFilePath = path.resolve(path.dirname(filePath), match[1])
-        if (markdownStore[importFilePath]) {
-          return runImports(source, importFilePath, markdownStore, fileErrors)
-        } else if (await files.isFile(importFilePath)) {
-          return files.readFile(importFilePath, 'utf8')
-        } else {
-          fileErrors(filePath, 'Cannot import not existing file: ' + match[1])
-        }
-      })
-    const result = await Promise.all(promises)
-    data.content = result.join(EOL)
+      const importFilePath = path.resolve(path.dirname(filePath), match[1])
+      if (indexWithinRanges(match.index, ranges)) {
+        result += match[0]
+      } else if (markdownStore[importFilePath]) {
+        result += await runImports(source, importFilePath, markdownStore, codeBlocks, fileErrors)
+      } else if (await files.isFile(importFilePath)) {
+        result += await files.readFile(importFilePath, 'utf8')
+      } else {
+        fileErrors(filePath, 'Cannot import not existing file: ' + match[1])
+      }
+    }
+    result += content.substring(index)
+    data.content = result
   }
   return data.content
 }
