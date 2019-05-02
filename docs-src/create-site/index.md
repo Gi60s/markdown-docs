@@ -42,3 +42,9 @@ Use the help to learn about what commands exist and how to use them.
 `markdown-docs help` - Get general help.
 
 `markdown-docs <command> --help` - Get help about a specific command. Use this to see what options are available for each command.
+
+<div style="color: red">
+
+{% import ./pages.md %}
+
+</div>
