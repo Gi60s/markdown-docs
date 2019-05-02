@@ -58,6 +58,7 @@ module.exports = async function (source, destination, { configFilePath, template
   const fw = fileErrors()
 
   const markdownStore = {}
+  const codeBlocks = {}
   await files.eachFile(source, async function (filePath) {
     if (path.extname(filePath).toLowerCase() !== '.md') return
 
@@ -81,11 +82,11 @@ module.exports = async function (source, destination, { configFilePath, template
     }
 
     // get code segment positions
+    codeBlocks[filePath] = []
     const rxCodeBlock = /`{3}[\s\S]+?`{3}|`[\s\S]+?`/g
-    const codeBlocks = []
     let match
     while ((match = rxCodeBlock.exec(body))) {
-      codeBlocks.push({ start: match.index, end: match.index + match[0].length })
+      codeBlocks[filePath].push({ start: match.index, end: match.index + match[0].length })
     }
 
     // convert links
@@ -94,7 +95,7 @@ module.exports = async function (source, destination, { configFilePath, template
     let index = 0
     while ((match = rxFixLinks.exec(body))) {
       const link = match[3] || match[4]
-      if (!rxHttp.test(link) && !indexWithinRanges(match.index, codeBlocks)) {
+      if (!rxHttp.test(link) && !indexWithinRanges(match.index, codeBlocks[filePath])) {
         const [ linkPath, linkHash ] = link.split('#')
         const fullPathToLink = path.resolve(path.dirname(filePath), (linkPath || filePath).split('/').join(path.sep))
         const relPathToLink = path.relative(source, fullPathToLink)
@@ -165,31 +166,20 @@ module.exports = async function (source, destination, { configFilePath, template
   // build the static site
   const customBuilderPath = path.resolve(template, 'builder.js')
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
-  await build({ builder, config, destination, fileErrors: fe.add, layouts, markdownStore, nav, source })
+  await build({ builder, codeBlocks, config, destination, fileErrors: fe.add, layouts, markdownStore, nav, source })
 
   // find broken links
   await findBrokenLinks(source, fw.add)
   if (fw.hasErrors()) console.error(fw.report('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files have missing or broken links:'))
 }
 
-async function build ({ builder, config, destination, fileErrors, layouts, markdownStore, nav, source }) {
+async function build ({ builder, codeBlocks, config, destination, fileErrors, layouts, markdownStore, nav, source }) {
   const promises = Object.keys(markdownStore)
     .map(async filePath => {
       const data = markdownStore[filePath]
       if (data.headers.render !== 'false') {
-        // final markdown modifications
-        const content = await runImports(source, filePath, markdownStore, fileErrors)
-
-        // get EJS params and render
+        // initialize EJS params
         const params = {
-          content: builder && builder.markdown
-            ? builder.markdown(content, marked)
-            : marked(content, {
-              highlight: (code, style) => {
-                return style ? hljs.highlight(style, code).value : code
-              }
-            }),
-          navigation: createNavHtml(nav, filePath, 0),
           page: Object.assign({}, config.page, data.headers, {
             description: config.site.description || data.headers.description || '',
             directory: path.dirname(data.filePath),
@@ -197,9 +187,22 @@ async function build ({ builder, config, destination, fileErrors, layouts, markd
             path: data.path
           }),
           site: config.site,
-          template: Object.assign({}, config.template),
-          toc: buildToc(content, data.headers.toc)
+          template: Object.assign({}, config.template)
         }
+
+        // final markdown modifications
+        let content = await runImports(source, filePath, markdownStore, fileErrors)
+
+        // add to EJS params and render
+        params.content = builder && builder.markdown
+          ? builder.markdown(content, marked)
+          : marked(content, {
+            highlight: (code, style) => {
+              return style ? hljs.highlight(style, code).value : code
+            }
+          })
+        params.navigation = createNavHtml(nav, filePath, 0)
+        params.toc = buildToc(content, data.headers.toc)
         const html = layouts[data.headers.layout || 'default'](params)
 
         // determine write location and write
