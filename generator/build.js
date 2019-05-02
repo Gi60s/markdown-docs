@@ -388,7 +388,7 @@ async function runImports (source, filePath, markdownStore, codeBlocks, fileErro
   const ranges = codeBlocks[filePath] || []
   if (!data.ranImports && data.content) {
     data.ranImports = true
-    const rxImport = /{% import ([\s\S]+) %}/g
+    const rxImport = /{% import ([\s\S]+?) %}/g
     const content = data.content
     let index = 0
     let result = ''
@@ -401,9 +401,9 @@ async function runImports (source, filePath, markdownStore, codeBlocks, fileErro
       if (indexWithinRanges(match.index, ranges)) {
         result += match[0]
       } else if (markdownStore[importFilePath]) {
-        result += await runImports(source, importFilePath, markdownStore, codeBlocks, fileErrors)
+        result += EOL + EOL + (await runImports(source, importFilePath, markdownStore, codeBlocks, fileErrors)) + EOL + EOL
       } else if (await files.isFile(importFilePath)) {
-        result += await files.readFile(importFilePath, 'utf8')
+        result += EOL + EOL + (await files.readFile(importFilePath, 'utf8')) + EOL + EOL
       } else {
         fileErrors(filePath, 'Cannot import file that does not exist: ' + match[1])
       }
