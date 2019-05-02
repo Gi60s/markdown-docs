@@ -37,12 +37,8 @@ The markdown-docs library converts markdown documents into HTML documents throug
 
 ## Command Line Usage
 
+Use the help to learn about what commands exist and how to use them.
+
 `markdown-docs help` - Get general help.
 
 `markdown-docs <command> --help` - Get help about a specific command. Use this to see what options are available for each command.
-
-`markdown-docs build [options] <source-directory> <destination-directory>` - Build your markdown files into a static website.
-
-`markdown-docs dev [options] <source-directory>` - Start a server to render your markdown files while you work on updating them.
-
-`markdown-docs init [options] <source-directory>` - A quick start to get up and running for a new site.
