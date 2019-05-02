@@ -80,14 +80,21 @@ module.exports = async function (source, destination, { configFilePath, template
       fe.add(filePath, 'Missing required page headers section.')
     }
 
+    // get code segment positions
+    const rxCodeBlock = /`{3}[\s\S]+?`{3}|`[\s\S]+?`/g
+    const codeBlocks = []
+    let match
+    while ((match = rxCodeBlock.exec(body))) {
+      codeBlocks.push({ start: match.index, end: match.index + match[0].length })
+    }
+
     // convert links
     const rxFixLinks = /(\[[^\]]+?]) *(: *([\s\S]+?)$|\(([\s\S]+?)\))/gm
     let newBody = ''
     let index = 0
-    let match
     while ((match = rxFixLinks.exec(body))) {
       const link = match[3] || match[4]
-      if (!rxHttp.test(link)) {
+      if (!rxHttp.test(link) && !indexWithinRanges(match.index, codeBlocks)) {
         const [ linkPath, linkHash ] = link.split('#')
         const fullPathToLink = path.resolve(path.dirname(filePath), (linkPath || filePath).split('/').join(path.sep))
         const relPathToLink = path.relative(source, fullPathToLink)
@@ -179,7 +186,7 @@ async function build ({ builder, config, destination, fileErrors, layouts, markd
             ? builder.markdown(content, marked)
             : marked(content, {
               highlight: (code, style) => {
-                return hljs.highlight(style, code).value
+                return style ? hljs.highlight(style, code).value : code
               }
             }),
           navigation: createNavHtml(nav, filePath, 0),
@@ -387,4 +394,14 @@ async function runImports (source, filePath, markdownStore, fileErrors) {
     data.content = result.join(EOL)
   }
   return data.content
+}
+
+function indexWithinRanges (index, ranges) {
+  const length = ranges.length
+  for (let i = 0; i < length; i++) {
+    const { start, end } = ranges[i]
+    if (index > end) return false
+    if (index >= start && index <= end) return true
+  }
+  return false
 }
