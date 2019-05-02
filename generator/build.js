@@ -167,9 +167,17 @@ module.exports = async function (source, destination, { configFilePath, template
   const builder = (await files.isFile(customBuilderPath)) ? require(customBuilderPath) : {}
   await build({ builder, codeBlocks, config, destination, fileErrors: fe.add, layouts, markdownStore, nav, source })
 
+  // report build errors
+  if (fe.hasErrors()) {
+    console.error(fe.report('[' + (new Date().toLocaleTimeString()) + '] ERROR: Unable to build due to one or more file errors:'))
+    return false
+  }
+
   // find broken links
   await findBrokenLinks(source, fw.add)
   if (fw.hasErrors()) console.error(fw.report('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files have missing or broken links:'))
+
+  return true
 }
 
 async function build ({ builder, codeBlocks, config, destination, fileErrors, layouts, markdownStore, nav, source }) {
@@ -202,7 +210,9 @@ async function build ({ builder, codeBlocks, config, destination, fileErrors, la
           })
         params.navigation = createNavHtml(nav, filePath, 0)
         params.toc = buildToc(content, data.headers.toc)
-        const html = layouts[data.headers.layout || 'default'](params)
+        const layout = layouts[data.headers.layout || 'default']
+        if (!layout) fileErrors(filePath, 'Invalid layout selected')
+        const html = layout ? layout(params) : ''
 
         // determine write location and write
         const ext = path.extname(filePath)
@@ -395,7 +405,7 @@ async function runImports (source, filePath, markdownStore, codeBlocks, fileErro
       } else if (await files.isFile(importFilePath)) {
         result += await files.readFile(importFilePath, 'utf8')
       } else {
-        fileErrors(filePath, 'Cannot import not existing file: ' + match[1])
+        fileErrors(filePath, 'Cannot import file that does not exist: ' + match[1])
       }
     }
     result += content.substring(index)

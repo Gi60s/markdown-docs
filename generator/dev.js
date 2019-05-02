@@ -84,23 +84,38 @@ module.exports = function (source, options = {}) {
       change(0)
     })
 
-  const listener = server.listen(port, async function (err) {
-    if (err) {
-      console.error(err.stack)
-    } else {
-      const config = await configPromise
-      const port = server.address().port
-      const addr = port + config.site.basePath
-      const log = [
-        '='.repeat(17 + addr.length),
-        'Server listening at:',
-        '    http://localhost:' + addr,
-        '    http://127.0.0.1:' + addr,
-        '='.repeat(17 + addr.length)
-      ]
-      console.log(log.join('\n'))
-    }
-  });
+  let listener
+  async function start(port, isOriginalCall) {
+    const config = await configPromise
+    return new Promise((resolve, reject) => {
+      listener = server.listen(port, function () {
+        if (isOriginalCall) {
+          const port = server.address().port
+          const addr = port + config.site.basePath
+          const log = [
+            '='.repeat(17 + addr.length),
+            'Server listening at:',
+            '    http://localhost:' + addr,
+            '    http://127.0.0.1:' + addr,
+            '='.repeat(17 + addr.length)
+          ]
+          console.log(log.join('\n'))
+          resolve()
+        }
+      })
+
+      server.on('error', function (err) {
+        if (err.code === 'EADDRINUSE' && port !== 0) {
+          console.error('\nPort already in use: ' + port + '. A different port will be used.')
+          start(0, false).then(resolve, reject)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  }
+
+  start(port, true).catch(err => console.error(err.stack))
 
   return {
     stop() {
@@ -117,13 +132,18 @@ module.exports = function (source, options = {}) {
         const time = Date.now()
         console.log('[' + (new Date().toLocaleTimeString()) + '] Building...')
         buildPromise = build(source, destination, Object.assign({}, options, { isLocal: true }))
-          .then(data => {
-            console.log('[' + (new Date().toLocaleTimeString()) + '] Build completed in ' + (Date.now() - time) + ' milliseconds\n')
-            return data
+          .then(success => {
+            if (success) {
+              console.log('[' + (new Date().toLocaleTimeString()) + '] Build completed in ' + (Date.now() - time) + ' milliseconds\n')
+            } else {
+              console.log('[' + (new Date().toLocaleTimeString()) + '] Build failed')
+            }
+            return success
           })
           .catch(err => {
             console.log('[' + (new Date().toLocaleTimeString()) + '] Build failed')
             console.error(err.stack)
+            return false
           })
           .then(data => {
             buildPromise = null
