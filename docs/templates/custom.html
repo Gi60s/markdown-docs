@@ -47,7 +47,7 @@
 
     
     <div class="nav-screen"></div>
-    <nav class="nav-list"><ul><ul><li><a href="/markdown-docs">Markdown Docs</a></li><li><a href="/markdown-docs/create-site">Create a Site</a><ul><li><a href="/markdown-docs/create-site/configuration">Configuration</a></li><li><a href="/markdown-docs/create-site/links">Links</a></li><li><a href="/markdown-docs/create-site/pages">Pages</a></li></ul></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom" class="current-page">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></li></ul></nav>
+    <nav class="nav-list"><ul><ul><li><a href="/markdown-docs">Markdown Docs</a></li><li><a href="/markdown-docs/create-site">Create a Site</a><ul><li><a href="/markdown-docs/create-site/pages">Pages</a></li><li><a href="/markdown-docs/create-site/configuration">Configuration</a></li><li><a href="/markdown-docs/create-site/navigation">Navigation Menu</a></li><li><a href="/markdown-docs/create-site/links">Links</a></li></ul></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom" class="current-page">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></li></ul></nav>
     
 
     <div class="page-content-main">
@@ -86,24 +86,23 @@
 </li>
 </ul>
 <p><strong>Details</strong></p>
-<p>Your markdown pages can specify which template layout they want to user in their <a href="/markdown-docs/create-site#headers">headers</a>. If a markdown file does not specify which template to use then the <code>default</code> template will be used. Therefore, every template must define a <code>default</code> template.</p>
-<p>To create a layout create an <code>html</code> file inside the <code>layouts</code> directory. The name you give this file will be the name of the layout that your markdown files can reference it by. For example, if you have a layout file named <code>main.html</code> then your markdown file can include in its <a href="/markdown-docs/create-site#headers">headers</a> <code>layout: main</code> to select this layout.</p>
+<p>Your markdown pages can specify which template layout they want to user in their <a href="/markdown-docs/create-site/pages#headers">headers</a>. If a markdown file does not specify which template to use then the <code>default</code> template will be used. Therefore, every template must define a <code>default</code> template.</p>
+<p>To create a layout create an <code>html</code> file inside the <code>layouts</code> directory. The name you give this file will be the name of the layout that your markdown files can reference it by. For example, if you have a layout file named <code>main.html</code> then your markdown file can include in its <a href="/markdown-docs/create-site/pages#headers">headers</a> <code>layout: main</code> to select this layout.</p>
 <p>On render, a template receives data about what is to be rendered, including:</p>
 <ul>
 <li><p>content - The HTML rendered from the markdown file.</p>
 </li>
 <li><p>navigation - The HTML rendered navigation based on the documentations directory structure.</p>
 </li>
-<li><p>page - Page <a href="/markdown-docs/create-site#headers">headers</a> as defined by your markdown files as well as default page header values.</p>
+<li><p>page - <a href="/markdown-docs/create-site/pages#headers">Page headers</a> as defined by your markdown files as well as default page header values.</p>
 </li>
-<li><p>site - Site variables as defined in the documentation&#39;s <a href="/markdown-docs/create-site#configuration">configuration file</a>.</p>
+<li><p>site - Site variables as defined in the documentation&#39;s <a href="/markdown-docs/create-site/configuration">configuration file</a>.</p>
 </li>
-<li><p>toc - A page&#39;s table of contents menu, rendered as specified by the page <a href="/markdown-docs/create-site#headers">headers</a> as HTML.</p>
+<li><p>toc - A page&#39;s table of contents menu, rendered as specified by the <a href="/markdown-docs/create-site/pages#headers">page headers</a> as HTML.</p>
 </li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="language-html">
-<span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+<pre><code class="language-html"><span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
 
 <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
@@ -145,14 +144,14 @@
 </li>
 <li><p><a href="https://www.npmjs.com/package/sass">SASS</a> files that have a comment <code>// SASS bootstrap</code> will be rendered to CSS.</p>
 </li>
-<li><p><a href="https://www.npmjs.com/package/sass">SASS</a> files that are bootstrapped can also take <a href="/markdown-docs/create-site#configuration">configuration file input</a> to overwrite default values.</p>
+<li><p><a href="https://www.npmjs.com/package/sass">SASS</a> files that are bootstrapped can also take <a href="/markdown-docs/create-site/configuration">configuration file input</a> to overwrite default values.</p>
 </li>
 </ul>
 <p><strong>Description</strong></p>
 <p>Templates can use <a href="https://www.npmjs.com/package/sass">SASS</a> to generate CSS files. The SASS files must exist in a directory named <code>styles</code> in the root of your template&#39;s directory. For all SASS files that you&#39;d like rendered, include the comment <code>// SASS bootstrap</code>.</p>
 <p>While defining your SASS files there may be certain values that you would like to allow the user of your template to define. To accomplish this you must first define the default value and then on the same line add the comment <code>// VAR varName</code> where <code>varName</code> is the name of the variables that can be used to overwrite the default value.</p>
 <p><strong>Example</strong></p>
-<p>In this example we set the body default color to <code>#333</code> but this can be overwritten if the <code>textColor</code> is specified in the <a href="/markdown-docs/create-site#configuration">configuration file&#39;s cssVars object</a>.</p>
+<p>In this example we set the body default color to <code>#333</code> but this can be overwritten if the <code>textColor</code> is specified in the <a href="/markdown-docs/create-site/configuration">configuration file&#39;s cssVars object</a>.</p>
 <p><em>SCSS File</em></p>
 <pre><code class="language-scss"><span class="hljs-selector-tag">body</span> {
   <span class="hljs-attribute">color</span>: <span class="hljs-number">#333</span>; <span class="hljs-comment">// VAR textColor</span>

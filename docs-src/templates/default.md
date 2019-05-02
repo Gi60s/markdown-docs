@@ -8,7 +8,7 @@ The default template will be used if you run a build without specifying a templa
 
 # Template Configuration
 
-This template accepts [document configuration](../create-site/index.md#configuration) parameters:
+This template accepts [document configuration](../create-site/configuration.md) parameters:
 
 | Property | Description |
 | -------- | ----------- |
@@ -20,7 +20,7 @@ This template accepts [document configuration](../create-site/index.md#configura
 
 # CSS Build Variables
 
-You can change some of the styling for the default template by specifying properties within your [document configuration](../create-site/index.md#configuration) file.
+You can change some of the styling for the default template by specifying properties within your [document configuration](../create-site/configuration.md) file.
 
 | Variable | Description | Default |
 | -------- | ----------- | ------- |
@@ -50,4 +50,4 @@ This template looks at the page headers to define how parts of the page are rend
 | description | The description to add to the HTML header's meta data |
 | subtitle | The sub title for the page. |
 | title | The title for the page. |
-| toc | Supported as described in the [headers documentation](../create-site/index.md#headers) |
+| toc | Supported as described in the [page headers documentation](../create-site/pages.md#headers) |

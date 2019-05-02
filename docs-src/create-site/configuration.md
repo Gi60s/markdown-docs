@@ -116,7 +116,7 @@ Depending on the [template layout](../templates/index.md#layouts) being used, ad
 | Option | Description |
 | ------ | ----------- |
 | path | The path to a custom template to use or the name of a built in template. `default` is a built in template. |
-| cssVars | An object used to modify the CSS for a template (and thus the look of the template). Each template defines its own [CSS variables](../templates/css-variables.md) that can be overwritten. |
+| cssVars | An object used to modify the CSS for a template (and thus the look of the template). Each template defines its own [CSS variables](../templates/default.md#css-build-variables) that can be overwritten. |
 
 ## Configuration File Location
 

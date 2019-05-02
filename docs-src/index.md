@@ -7,9 +7,7 @@ toc: false
 
 ## What is This?
 
-A minimal configuration, markdown to static site generator.
-
-**Features:**
+This is a minimal configuration, markdown to static site generator. Featuring:
 
 - A clean, simple, mobile ready, template provided as default UI.
 

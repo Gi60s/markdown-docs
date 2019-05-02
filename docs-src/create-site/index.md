@@ -1,37 +1,48 @@
 ---
 title: Create a Site
+navOrder: pages configuration navigation links
 ---
 
-# How It Works
+## Quick Start
 
-1. Select or create a directory of where you'll put your markdown files and other resources (images, videos, etc.).
-
-    This directory will be known as your *source* directory.
-
-2. If you don't already have your source directory started then initialize the site with the command line tool:
+1. If you haven't installed the application, do so:
 
     ```bash
-    markdown-docs init --serve /path/to/source-dir
+    npm install -g @gi60s/markdown-docs
     ```
-    
-    If you source directory has been started then make sure you have a [configuration file](./configuration.md) and use the command line tool to auto build and serve the documentation:
-    
+
+2. Initialize a new site. Be sure to specify your desired source directory.
+
     ```bash
-    markdown-docs dev /path/to/source-dir
+    markdown-docs init --serve </path/to/source-dir>
     ```
+    
+3. Open the source directory and start editing, adding, or removing markdown files.
 
-3. Write your markdown files and use a web browser to look at the result of the static website.
+## What You Need to Know
 
-# Structuring Your Documentation
+The markdown-docs library converts markdown documents into HTML documents through a build process.
 
-Within your source directory you can add:
- 
-- Any type of static asset (images, videos, JavaScript files, CSS files, etc.)
+- Every markdown file will be converted to a [page](./pages.md) that will be rendered using a [template layout](../templates/index.md#layouts).
 
-- Markdown files (that will be converted to HTML files and wrapped with the template)
+- By default there is one template and one layout, but you can [create a custom template with its own custom layouts](../templates/custom.md).
 
-- Directories that contain other assets and markdown files.
+- Every directory (and sub directory) must have an `index.md` file with [page headers](./pages.md#headers).
 
-Each directory must contain an `index.md` file.
+- The directory structure along with a [page headers](./pages.md#headers) `title` define the [site navigation](./navigation.md).
 
-The site navigation menu will be generated based on the file system structure of your documentation. The title for links will come from the `title` [header](#headers) for each page.
+- All markdown files that should be converted to HTML must have [page headers](./pages.md#headers).
+
+- Run in development to see your site fully rendered locally.
+
+## Command Line Usage
+
+`markdown-docs help` - Get general help.
+
+`markdown-docs <command> --help` - Get help about a specific command. Use this to see what options are available for each command.
+
+`markdown-docs build [options] <source-directory> <destination-directory>` - Build your markdown files into a static website.
+
+`markdown-docs dev [options] <source-directory>` - Start a server to render your markdown files while you work on updating them.
+
+`markdown-docs init [options] <source-directory>` - A quick start to get up and running for a new site.
