@@ -32,7 +32,7 @@ function getMarkdownHeadings (content) {
       store[ref] = 0
     } else {
       store[ref]++
-      ref += store[ref]
+      ref += '-' + store[ref]
     }
     next.ref = ref
 
