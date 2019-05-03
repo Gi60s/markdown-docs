@@ -120,6 +120,7 @@ module.exports = async function (source, destination, { configFilePath, template
       filePath,
       headers,
       isIndex,
+      path: relKey,
       urlPath: urlPath.substring(0, urlPath.length - (isIndex ? 9 : 3)),
       urlPathFull: urlPath
     }
