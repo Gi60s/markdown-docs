@@ -298,6 +298,7 @@ function organizeNavigation (structure, markdownStore, fileError) {
     if (!index) {
       if (hasNonIndex) fileError(structure.filePath, 'Missing required index.md file')
     } else if (indexNavMenu) {
+      nav.id = path.basename(path.dirname(index.filePath))
       nav.filePath = index.filePath
       nav.inNav = index.inNav
       nav.title = index.title
