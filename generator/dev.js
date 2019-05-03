@@ -43,8 +43,8 @@ module.exports = function (source, options = {}) {
 
     let pathName = parseUrl(req).pathname
     if (!pathName.startsWith(config.site.basePath)) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' })
-      res.end('Page not found: Your base path is set to ' + config.site.basePath)
+      res.writeHead(307, { 'Location': config.site.basePath })
+      res.end()
       return
     }
     pathName = pathName.substring(config.site.basePath.length).replace(/\/$/, '')
