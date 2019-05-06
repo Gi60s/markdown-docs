@@ -395,7 +395,7 @@ async function runImports (source, filePath, markdownStore, codeBlocks, fileErro
     let index = 0
     let result = ''
     let match
-    while ((match = rxImport.exec(data.content))) {
+    while ((match = rxImport.exec(content))) {
       result += content.substring(index, match.index)
       index = match.index + match[0].length
 
@@ -420,7 +420,6 @@ function indexWithinRanges (index, ranges) {
   const length = ranges.length
   for (let i = 0; i < length; i++) {
     const { start, end } = ranges[i]
-    if (index > end) return false
     if (index >= start && index <= end) return true
   }
   return false
