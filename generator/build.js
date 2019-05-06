@@ -258,7 +258,7 @@ function createNavHtml (nav, currentPath, depth) {
     html += '<ul>' + nav.children.map(child => createNavHtml(child, currentPath, depth + 1)).join('') + '</ul>'
   }
   html += '</li>'
-  return depth === 0 ? '<ul>' + html + '</ul>' : html
+  return html
 }
 
 async function getSiteStructure (source, map) {
