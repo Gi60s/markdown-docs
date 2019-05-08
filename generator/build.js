@@ -110,7 +110,7 @@ module.exports = async function (source, destination, { configFilePath, template
       }
       index = match.index + match[0].length
     }
-    newBody += body.substring(index)
+    newBody += (body || '').substring(index)
 
     const relKey = path.relative(source, filePath).split(path.sep).join('/')
     const urlPath = config.site.basePath + '/' + relKey
