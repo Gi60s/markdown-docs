@@ -4,9 +4,13 @@ const files = require('./files')
 const path = require('path')
 
 const rxExternalLink = /^https?:\/\//
+const rxMarkdownFile = /\.md$/i
 
-module.exports = async function (filePath, fileWarning) {
+module.exports = async function (configFilePath, filePath, fileWarning) {
   const store = await getHeadings(filePath, filePath, {})
+  await files.eachFile(filePath, function (filePath) {
+    if (!rxMarkdownFile.test(filePath) && filePath !== configFilePath) store[filePath] = null
+  })
   return findBrokenLinks(filePath, filePath, store, fileWarning)
 }
 

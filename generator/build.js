@@ -178,7 +178,7 @@ module.exports = async function (source, destination, { configFilePath, template
   }
 
   // find broken links
-  await findBrokenLinks(source, fw.add)
+  await findBrokenLinks(configFilePath, source, fw.add)
   if (fw.hasErrors()) console.error(fw.report('[' + (new Date().toLocaleTimeString()) + '] WARNING: One or more files have missing or broken links:'))
 
   return true
