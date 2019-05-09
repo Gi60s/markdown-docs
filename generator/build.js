@@ -13,6 +13,7 @@ const sass = require('sass')
 const util = require('./util')
 
 const rxHttp = /^https?:\/\//
+const rxMarkdownFile = /\.md$/i
 
 // TODO: static web page servers that require the .html extension
 
@@ -99,9 +100,11 @@ module.exports = async function (source, destination, { configFilePath, template
         const fullPathToLink = path.resolve(path.dirname(filePath), (linkPath || filePath).split('/').join(path.sep))
         const relPathToLink = path.relative(source, fullPathToLink)
         let newLink = config.site.basePath + '/' + relPathToLink.split(path.sep).join('/')
-        newLink = newLink.toLowerCase().endsWith('/index.md')
-          ? newLink.substring(0, newLink.length - 9)
-          : newLink.substring(0, newLink.length - 3)
+        if (rxMarkdownFile.test(newLink)) {
+          newLink = newLink.toLowerCase().endsWith('/index.md')
+            ? newLink.substring(0, newLink.length - 9)
+            : newLink.substring(0, newLink.length - 3)
+        }
         if (linkHash) newLink += '#' + linkHash
         newBody += body.substring(index, match.index) + match[1] +
           (match[2].startsWith(':') ? ': ' + newLink : '(' + newLink + ')')
