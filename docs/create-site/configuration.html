@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Markdown Docs | Configuration</title>
+  <meta name="description" content="Documentation on how to use markdown-docs to generate a static website from Markdown files.">
+
+  <link rel="icon" href="/markdown-docs/favicon.png">
+
+  <link rel="stylesheet" href="/markdown-docs/template-files/styles/main.css" media="all">
+  
+  
+  <link rel="stylesheet" href="/markdown-docs/css/main.css" media="all">
+  
+  
+  
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="wrapper">
+      <a class="site-title" href="/markdown-docs">
+        Markdown Docs
+      </a>
+
+      
+      <nav class="site-nav">
+        <a href="#" class="menu-icon" aria-label="Menu">
+          <svg viewBox="0 0 18 15">
+            <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+            <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+            <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+          </svg>
+        </a>
+      </nav>
+      
+    </div>
+  </header>
+
+<div class="page-content">
+  <div class="wrapper">
+
+    
+    <div class="nav-screen"></div>
+    <nav class="nav-list"><ul><li><a href="/markdown-docs">Markdown Docs</a></li><li><a href="/markdown-docs/create-site">Create a Site</a><ul><li><a href="/markdown-docs/create-site/pages">Pages</a></li><li><a href="/markdown-docs/create-site/configuration" class="current-page">Configuration</a></li><li><a href="/markdown-docs/create-site/navigation">Navigation Menu</a></li><li><a href="/markdown-docs/create-site/links">Links</a></li><li><a href="/markdown-docs/create-site/import">Import into Markdown</a></li></ul></li><li><a href="/markdown-docs/github-pages">Github Pages</a></li><li><a href="/markdown-docs/templates">Templates</a><ul><li><a href="/markdown-docs/templates/custom">Create a Custom Template</a></li><li><a href="/markdown-docs/templates/default">The Default Template</a></li></ul></li></ul></li></nav>
+    
+
+    <div class="page-content-main">
+      <article class="post">
+        <header class="post-header">
+          <div class="post-subtitle">Create a Site</div>
+          <h1 class="post-title">Configuration</h1>
+        </header>
+
+        
+        <div>
+          <p><strong>Page Content</strong></p>
+          <div class="section-nav"><ul class="toc"><li><a href="#example-configuration-file">Example Configuration File</a></li><li><a href="#common-configuration-file-options">Common Configuration File Options</a><ul><li><a href="#page-options">Page Options</a></li><li><a href="#site-options">Site Options</a></li><li><a href="#template-options">Template Options</a></li></ul></li><li><a href="#configuration-file-location">Configuration File Location</a><ul><li><a href="#build-with-custom-config-file-location">Build with Custom Config File Location</a></li><li><a href="#develop-with-custom-config-file-location">Develop with Custom Config File Location</a></li></ul></li></ul></div>
+        </div>
+        
+
+        <div class="post-content"><p>The configuration file is an essential part of the static website that will be built. It tells the builder what template to use, what information to display, and what defaults to apply.</p>
+<p>By default the configuration file should be named <code>markdown-docs.js</code> and should reside in the root of your source directory.</p>
+<h2 id="example-configuration-file">Example Configuration File</h2>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">page</span>: {               <span class="hljs-comment">// set page defaults</span>
+    layout: <span class="hljs-string">'default'</span>,
+    <span class="hljs-attr">toc</span>: <span class="hljs-literal">true</span>
+  },
+  <span class="hljs-attr">site</span>: {               <span class="hljs-comment">// set site wide information</span>
+    editSourceUrl: <span class="hljs-string">'https://github.com/&lt;my-org&gt;/&lt;my-repository&gt;/tree/master/docs-src'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Markdown Docs'</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">'https://&lt;my-org&gt;.github.io/markdown-docs/'</span>,
+  },
+  <span class="hljs-attr">template</span>: {           <span class="hljs-comment">// set template specific information</span>
+    path: <span class="hljs-string">'default'</span>,
+    <span class="hljs-attr">cssVars</span>: {
+      <span class="hljs-attr">brandColor</span>: <span class="hljs-string">'#00A288'</span>,
+      <span class="hljs-attr">brandColorLight</span>: <span class="hljs-string">'#8BDBCD'</span>,
+      <span class="hljs-attr">brandColorDark</span>: <span class="hljs-string">'#00382F'</span>
+    }
+  }
+}</code></pre>
+<h2 id="common-configuration-file-options">Common Configuration File Options</h2>
+<h3 id="page-options">Page Options</h3>
+<p>The configuration options that are specific to pages exist in the page object. </p>
+<p>These options act as defaults for the <a href="/markdown-docs/create-site/pages">pages</a> and can be overwritten in the <a href="/markdown-docs/create-site/pages#headers">page headers</a> for any <a href="/markdown-docs/create-site/pages">page</a>.</p>
+<details><summary>Code Snippit</summary>
+<div>
+
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">page</span>: {               <span class="hljs-comment">// set page defaults</span>
+    layout: <span class="hljs-string">'default'</span>,
+    <span class="hljs-attr">toc</span>: <span class="hljs-literal">true</span>
+  },
+  ...
+}</code></pre>
+</div></details>
+
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>layout</td>
+<td>The <a href="/markdown-docs/templates#layouts">template layout</a> to use to render the page.</td>
+</tr>
+<tr>
+<td>toc</td>
+<td>The default <a href="/markdown-docs/create-site/pages#table-of-contents">table of contents</a> setting.</td>
+</tr>
+</tbody></table>
+<h3 id="site-options">Site Options</h3>
+<p>The configuration options that are general to the entire site exist in the site object. Whichever <a href="/markdown-docs/templates#layouts">template layout</a> you use should use these values to render each page.</p>
+<details><summary>Code Snippit</summary>
+<div>
+
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  ...
+  site: {               <span class="hljs-comment">// set site wide information</span>
+    editSourceUrl: <span class="hljs-string">'https://github.com/&lt;my-org&gt;/&lt;my-repository&gt;/tree/master/docs-src'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Markdown Docs'</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">'https://&lt;my-org&gt;.github.io/markdown-docs/'</span>,
+  },
+  ...
+}</code></pre>
+</div></details>
+
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>editSourceUrl</td>
+<td>The base URL of where the user could go to edit the online copy of the source directory. If this is omitted then the template should know to exclude this information from the rendered page.</td>
+</tr>
+<tr>
+<td>title</td>
+<td>The title for the website.</td>
+</tr>
+<tr>
+<td>url</td>
+<td>The URL of where to see the rendered website.</td>
+</tr>
+</tbody></table>
+<p>Depending on the <a href="/markdown-docs/templates#layouts">template layout</a> being used, additional site properties may be used to render the page.</p>
+<h3 id="template-options">Template Options</h3>
+<p>The configuration options that are specific to a template reside here. Most of these options will only be used by the <a href="/markdown-docs/templates#layouts">template layout</a>, the exception being the <code>path</code> and <code>cssVars</code>.</p>
+<details><summary>Code Snippit</summary>
+<div>
+
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  ...
+  template: {               <span class="hljs-comment">// set template specific information</span>
+    path: <span class="hljs-string">'default'</span>,
+    <span class="hljs-attr">cssVars</span>: {
+      <span class="hljs-attr">brandColor</span>: <span class="hljs-string">'#00A288'</span>,
+      <span class="hljs-attr">brandColorLight</span>: <span class="hljs-string">'#8BDBCD'</span>,
+      <span class="hljs-attr">brandColorDark</span>: <span class="hljs-string">'#00382F'</span>
+    }
+  }
+}</code></pre>
+</div></details>
+
+<p>Depending on the <a href="/markdown-docs/templates#layouts">template layout</a> being used, additional site properties may be used to render the page.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>path</td>
+<td>The path to a custom template to use or the name of a built in template. <code>default</code> is a built in template.</td>
+</tr>
+<tr>
+<td>cssVars</td>
+<td>An object used to modify the CSS for a template (and thus the look of the template). Each template defines its own <a href="/markdown-docs/templates/default#css-build-variables">CSS variables</a> that can be overwritten.</td>
+</tr>
+</tbody></table>
+<h2 id="configuration-file-location">Configuration File Location</h2>
+<p>Your documentation can use a custom config file instead of always using the <code>markdown-docs.js</code> file. This could be useful if you have different settings for development and production documentation.</p>
+<p>You can specify which configuration file to use either through the command line or through use of this library in your own code. </p>
+<h3 id="build-with-custom-config-file-location">Build with Custom Config File Location</h3>
+<p>Command Line</p>
+<pre><code class="language-bash">$ markdown-docs build -c ./<span class="hljs-built_in">source</span>/my-config.js ./<span class="hljs-built_in">source</span> ./destination</code></pre>
+<p>Code</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> markdownDocs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'markdown-docs'</span>)
+<span class="hljs-keyword">const</span> promise = markdownDocs.build(<span class="hljs-string">'/path/to/source'</span>, <span class="hljs-string">'/path/to/destination'</span>, {
+  <span class="hljs-attr">config</span>: <span class="hljs-string">'/path/to/my-config.js'</span> 
+})</code></pre>
+<h3 id="develop-with-custom-config-file-location">Develop with Custom Config File Location</h3>
+<p>Command Line</p>
+<pre><code class="language-bash">$ markdown-docs dev -c ./<span class="hljs-built_in">source</span>/my-config.js ./<span class="hljs-built_in">source</span> ./destination</code></pre>
+<p>Code</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> markdownDocs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'markdown-docs'</span>)
+<span class="hljs-keyword">const</span> promise = markdownDocs.dev(<span class="hljs-string">'/path/to/source'</span>, {
+  <span class="hljs-attr">config</span>: <span class="hljs-string">'/path/to/my-config.js'</span> 
+})</code></pre>
+</div>
+      </article>
+
+      <footer class="site-footer">
+
+        
+        <p>
+          Caught a mistake or want to contribute to the documentation?
+          <a href="https://github.com/Gi60s/markdown-docs/tree/master/docs-src/create-site/configuration.md" target="_blank" rel="noopener">Edit this page on Github</a>
+        </p>
+        
+
+        
+        <div class="footer-fine-print"><p>Book icon obtained under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">Creative Commons (Attribution 3.0 Unported)</a> license, created by <a href="https://www.iconfinder.com/laurareen">Laura Reen</a>.</p></div>
+        
+
+        
+        <div class="footer-links">
+          
+          <div><a href="https://github.com/Gi60s/markdown-docs" target="_blank" rel="noopener">Github</a></div>
+          
+          <div><a href="https://www.npmjs.com/package/@gi60s/markdown-docs" target="_blank" rel="noopener">NPM</a></div>
+          
+        </div>
+        
+
+      </footer>
+    </div>
+
+  </div>
+</div>
+
+
+<script src="/markdown-docs/template-files/js/main.js"></script>
+
+</body>
+
+</html>
