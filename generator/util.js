@@ -13,7 +13,6 @@ function getMarkdownHeadings (content) {
   content = removeMarkdownCode(content)
 
   let match
-  let last = root
   while ((match = rxHeadings.exec(content))) {
     const next = {
       children: [],
@@ -36,24 +35,20 @@ function getMarkdownHeadings (content) {
     }
     next.ref = ref
 
-    if (next.level > last.level) {
-      next.parent = last
-      last.children.push(next)
-      root.all.push(next)
-    } else if (next.level === last.level) {
-      next.parent = last.parent
-      next.parent.children.push(next)
-      root.all.push(next)
-    } else {
-      let p = last.parent
-      while (p.level < next.level && p.parent) p = p.parent
-      next.parent = p.parent || root
-      next.parent.children.push(next)
-      root.all.push(next)
-    }
-
-    last = next
+    root.all.push(next)
   }
+
+  let parent = root;
+  root.all.forEach(heading => {
+    while (heading.level <= parent.level) parent = parent.parent;
+    if (heading.level > parent.level) {
+      heading.parent = parent;
+      parent.children.push(heading);
+      parent = heading;
+    } else {
+      parent.children.push(heading);
+    }
+  })
 
   return root
 }
