@@ -94,8 +94,12 @@
   </div>
 </div>
 
-
 <script src="<%= site.basePath %>/template-files/js/main.js"></script>
+<% if (template.jsFiles) { %>
+<%   for (var i = 0; i < template.jsFiles.length; i++) { %>
+<script src="<%= site.basePath %><%= template.jsFiles[i] %>"></script>
+<%   } %>
+<% } %>
 
 </body>
 

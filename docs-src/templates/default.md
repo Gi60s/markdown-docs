@@ -17,6 +17,7 @@ This template accepts [document configuration](../create-site/configuration.md) 
 | favicon | The URL to the favicon |
 | finePrint | HTML content to inject at the bottom of the page as a footer. |
 | footerLinks | An array of objects with a `title` and `href` property. This entries will be added as links to the footer. |
+| jsFiles | An array of web paths to use as JavaScript files to load at the end of the HTML. |
 
 # CSS Build Variables
 
