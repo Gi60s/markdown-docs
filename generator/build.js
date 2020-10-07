@@ -69,7 +69,7 @@ module.exports = async function (source, destination, { configFilePath, template
     const headers = Object.assign({}, config.page)
     if (header) {
       header
-        .split(EOL)
+        .split(/\r\n|\r|\n/)
         .forEach(line => {
           const index = line.indexOf(':')
           const key = index !== -1 ? line.substring(0, index).trim() : line
