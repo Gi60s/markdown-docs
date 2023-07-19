@@ -65,6 +65,7 @@ module.exports = function (source, options = {}) {
     }
 
     if (pathName.endsWith('.html')) res.setHeader('Cache-Control', 'no-store')
+    if (pathName.endsWith('.wasm')) res.setHeader('Content-Type', 'application/wasm')
     send(req, pathName, { root: destination }).pipe(res)
   });
 
