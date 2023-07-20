@@ -19,6 +19,7 @@ const send = require('send')
  * @returns {{stop(): void}}
  */
 module.exports = function (source, options = {}) {
+  console.log('Markdown docs with mime patch')
   const configFilePath = options.configFilePath
     ? path.resolve(process.cwd(), options.configFilePath)
     : path.resolve(source, 'markdown-docs.js')
@@ -64,6 +65,7 @@ module.exports = function (source, options = {}) {
     }
 
     if (pathName.endsWith('.html')) res.setHeader('Cache-Control', 'no-store')
+    if (pathName.endsWith('.wasm')) res.setHeader('Content-Type', 'application/wasm')
     send(req, pathName, { root: destination }).pipe(res)
   });
 
